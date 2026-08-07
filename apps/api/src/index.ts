@@ -1,9 +1,11 @@
 // apps/api/src/index.ts
 import express, { Request, Response } from 'express';
+import { createServer } from 'http';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
+import { SocketServer } from './utils/SocketServer';
 import path from 'path';
 
 import { errorHandler } from './middlewares/errorHandler';
@@ -78,10 +80,16 @@ app.use('/api/v1', masterRoutes);
 app.use(errorHandler);
 
 // ==========================================
-// SERVER & BACKGROUND JOBS START
+// SERVER, WEBSOCKET & BACKGROUND JOBS START
 // ==========================================
-app.listen(PORT, () => {
+const httpServer = createServer(app);
+
+// Inisialisasi WebSocket menggunakan HTTP Server
+SocketServer.init(httpServer);
+
+httpServer.listen(PORT, () => {
     console.log(`🚀 [LINTAS Core API] Server berjalan di http://localhost:${PORT}`);
+    console.log(`🔌 [WebSocket] Real-time engine aktif!`);
     console.log(`🛡️  Environment: ${process.env.NODE_ENV}`);
     console.log(`📂  Static Storage Path: ${uploadsPath}`);
 

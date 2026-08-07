@@ -4,6 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -28,6 +31,7 @@
     "multer": "^2.2.0",
     "pdfkit": "^0.19.1",
     "pg": "^8.22.0",
+    "socket.io": "^4.8.3",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -41,11 +45,12 @@
     "@types/node": "^24.13.3",
     "@types/pdfkit": "^0.17.6",
     "@types/pg": "^8.20.4",
+    "@types/socket.io": "^3.0.2",
     "prisma": "^7.9.1",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "tsx": "^4.23.9",
-    "typescript": "^7.0.2"
+    "typescript": "^5.4.5"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"

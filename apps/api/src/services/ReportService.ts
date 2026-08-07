@@ -3,6 +3,7 @@ import prisma from '../config/database';
 import { CreatePublicReportDTO } from '@dishub/types';
 import { AppError } from '../middlewares/errorHandler';
 import { SpatialService } from './SpatialService';
+import { SocketServer } from '../utils/SocketServer';
 
 const spatialService = new SpatialService();
 
@@ -87,6 +88,9 @@ export class ReportService {
 
             return rep;
         });
+
+        // 🔌 WEBSOCKET: Pancarkan real-time update ke Room Admin
+        SocketServer.emitToRoom('ADMIN_ROOM', 'NEW_REPORT', report);
 
         return {
             report,

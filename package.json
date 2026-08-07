@@ -1,17 +1,17 @@
 {
   "name": "lintas-kbb-monorepo",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Layanan Inventaris & Sistem Tata Aset",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "turbo run dev --parallel",
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "clean": "turbo run clean"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "packageManager": "pnpm@10.28.0",
   "devDependencies": {
     "turbo": "^2.10.8",
-    "typescript": "^7.0.2"
+    "typescript": "^5.4.5"
   }
 }

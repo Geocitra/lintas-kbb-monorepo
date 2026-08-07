@@ -2,8 +2,9 @@
 import prisma from '../config/database';
 import { AssignTicketDTO, ExecuteTicketDTO, ReviewTicketDTO } from '@dishub/types';
 import { AppError } from '../middlewares/errorHandler';
-import { slaQueue, waQueue } from '../config/queue'; // IMPORT waQueue
-import { ExifValidator } from '../utils/ExifValidator'; // IMPORT ExifValidator
+import { slaQueue, waQueue } from '../config/queue';
+import { SocketServer } from '../utils/SocketServer';
+import { ExifValidator } from '../utils/ExifValidator';
 
 export class TicketService {
 
@@ -11,7 +12,7 @@ export class TicketService {
     // 1. PENUGASAN OLEH ADMIN (SLA Scheduling & WA Notif)
     // ==========================================
     async assignTicket(reportId: string, data: AssignTicketDTO, adminId: string) {
-        return await prisma.$transaction(async (tx) => {
+        const ticketResult = await prisma.$transaction(async (tx) => {
             const report = await tx.report.findUnique({ where: { id: reportId }, include: { asset: true } });
             if (!report) throw new AppError('Laporan tidak ditemukan', 404);
             if (!report.asset_id) throw new AppError('Laporan ini belum memiliki aset terkait', 400);
@@ -63,6 +64,10 @@ export class TicketService {
 
             return ticket;
         });
+
+        // 🔌 WEBSOCKET: Pancarkan real-time update tugas baru ke semua klien/dashboard
+        SocketServer.emitToAll('TICKET_ASSIGNED', ticketResult);
+        return ticketResult;
     }
 
     // ==========================================
@@ -107,7 +112,7 @@ export class TicketService {
         }
 
         // C. Simpan ke Database
-        return await prisma.$transaction(async (tx) => {
+        const executeResult = await prisma.$transaction(async (tx) => {
             const updatedTicket = await tx.maintenanceTicket.update({
                 where: { id: ticketId },
                 data: {
@@ -128,13 +133,17 @@ export class TicketService {
 
             return updatedTicket;
         });
+
+        // 🔌 WEBSOCKET: Pancarkan real-time update teknisi melapor selesai
+        SocketServer.emitToAll('TICKET_EXECUTED', executeResult);
+        return executeResult;
     }
 
     // ==========================================
     // 3. REVIEW OLEH ADMIN (Quality Control)
     // ==========================================
     async reviewTicket(ticketId: string, data: ReviewTicketDTO, adminId: string) {
-        return await prisma.$transaction(async (tx) => {
+        const result = await prisma.$transaction(async (tx) => {
             const ticket = await tx.maintenanceTicket.findUnique({ where: { id: ticketId }, include: { report: true } });
             if (!ticket || ticket.status !== 'REVIEW_ADMIN') throw new AppError('Tiket tidak dalam status REVIEW_ADMIN', 400);
 
@@ -195,6 +204,10 @@ export class TicketService {
                 return rejectedTicket;
             }
         });
+
+        // 🔌 WEBSOCKET: Pancarkan real-time status review disetujui / ditolak
+        SocketServer.emitToAll('TICKET_STATUS_UPDATED', result);
+        return result;
     }
 
     // ==========================================

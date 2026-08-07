@@ -15,6 +15,7 @@ export const ReportPriorityEnum = z.enum(['URGENT', 'TINGGI', 'NORMAL', 'RENDAH'
 
 // A. Skema Laporan Warga Publik (Tanpa Auth)
 export const CreatePublicReportSchema = z.object({
+    nama_pelapor: z.string().optional(),
     kontak_pelapor: z.string().regex(/^62\d{8,13}$/, { message: 'Nomor WA harus diawali 62 dan berisi 10-15 digit' }),
     judul_laporan: z.string().min(5, { message: 'Judul laporan minimal 5 karakter' }),
     deskripsi: z.string().min(10, { message: 'Mohon jelaskan kondisi kerusakan dengan lebih detail (min 10 karakter)' }),
