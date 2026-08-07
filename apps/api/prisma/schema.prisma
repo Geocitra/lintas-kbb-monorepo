@@ -1,0 +1,286 @@
+// apps/api/prisma/schema.prisma
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"] 
+}
+
+datasource db {
+  provider   = "postgresql"
+  extensions = [postgis] 
+}
+
+// ==========================================
+// 1. ENUMERASI (STATE MACHINES & DOMAINS)
+// ==========================================
+
+enum Role {
+  KADIS
+  ADMIN
+  KASI
+  TEKNISI
+  MASYARAKAT
+}
+
+enum AssetCondition {
+  BAIK
+  RUSAK_RINGAN
+  RUSAK_BERAT
+  KRITIS
+  HILANG
+}
+
+enum AssetState {
+  DRAFT           
+  GUDANG          
+  AKTIF           
+  DALAM_PERBAIKAN 
+  AFKIR           
+}
+
+enum TicketStatus {
+  LAPORAN_MASUK   
+  TERVALIDASI     
+  DITUGASKAN      
+  DIKERJAKAN      
+  REVIEW_ADMIN    
+  SELESAI         
+  DITOLAK         
+}
+
+enum AnnouncementTarget {
+  SEMUA
+  TEKNISI
+  KASI
+  ADMIN
+}
+
+// ==========================================
+// 2. TABEL MASTER & AKTOR
+// ==========================================
+
+model Seksi {
+  id          String   @id @default(cuid())
+  nama_seksi  String   @unique
+  deskripsi   String?
+  users       User[]
+  createdAt   DateTime @default(now())
+}
+
+model User {
+  id            String   @id @default(cuid())
+  nip           String?  @unique
+  name          String
+  email         String   @unique
+  password      String
+  no_wa         String?
+  role          Role     @default(TEKNISI)
+  seksi_id      String?
+  is_active     Boolean  @default(true)
+  
+  seksi         Seksi?   @relation(fields: [seksi_id], references: [id], onDelete: SetNull)
+  
+  // Relasi sebagai aktor
+  assignments_received AssetAssignment[] @relation("AssignedUser")
+  assignments_given    AssetAssignment[] @relation("AssignorUser")
+  tickets_handled      MaintenanceTicket[]
+  histories_created    AssetHistory[]
+  
+  // Relasi Broadcast (FASE 7)
+  announcements_authored Announcement[]    @relation("AnnouncementAuthor")
+  announcement_acks      AnnouncementAck[]
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  kode        String   @unique 
+  nama        String
+  is_spatial  Boolean  @default(true) 
+  assets      Asset[]
+}
+
+// ==========================================
+// 3. CORE ASSET MANAGEMENT
+// ==========================================
+
+model Asset {
+  id                 String         @id @default(cuid())
+  kategori_id        String
+  kode_inventaris    String?        @unique 
+  nama_aset          String
+  
+  kondisi            AssetCondition @default(BAIK)
+  status_operasional AssetState     @default(DRAFT)
+  
+  lat                Float?
+  lng                Float?
+  alamat_fisik       String?
+  geom               Unsupported("geometry(Point, 4326)")? 
+  
+  metadata           Json           @default("{}") 
+  foto_utama         String?
+
+  kategori           Category       @relation(fields: [kategori_id], references: [id], onDelete: Restrict)
+  
+  assignments        AssetAssignment[]
+  reports            Report[]
+  tickets            MaintenanceTicket[]
+  histories          AssetHistory[]
+
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  @@index([geom], type: Gist) 
+  @@index([status_operasional])
+}
+
+// ==========================================
+// 4. TABEL TRANSAKSIONAL (HANDOVER & AUDIT)
+// ==========================================
+
+model AssetAssignment {
+  id                   String    @id @default(cuid())
+  asset_id             String
+  user_id              String    
+  assigned_by_id       String    
+  
+  assigned_at          DateTime  @default(now())
+  returned_at          DateTime? 
+  
+  kondisi_serah_terima String?
+  kondisi_dikembalikan String?
+  foto_bukti           String?
+
+  asset                Asset     @relation(fields: [asset_id], references: [id], onDelete: Cascade)
+  user                 User      @relation("AssignedUser", fields: [user_id], references: [id], onDelete: Restrict)
+  assignor             User      @relation("AssignorUser", fields: [assigned_by_id], references: [id], onDelete: Restrict)
+
+  @@index([asset_id, returned_at]) 
+}
+
+model AssetHistory {
+  id          String   @id @default(cuid())
+  asset_id    String
+  actor_id    String   
+  action      String   
+  old_data    Json?
+  new_data    Json?
+  keterangan  String?
+  createdAt   DateTime @default(now())
+
+  asset       Asset    @relation(fields: [asset_id], references: [id], onDelete: Cascade)
+  actor       User     @relation(fields: [actor_id], references: [id], onDelete: Restrict)
+}
+
+// ==========================================
+// 5. TICKETING & WORK ORDER
+// ==========================================
+
+model Report {
+  id               String   @id @default(cuid())
+  ticket_number    String   @unique 
+  sumber_pelapor   String   
+  nama_pelapor     String
+  kontak_pelapor   String?
+  
+  judul_laporan    String
+  deskripsi        String
+  
+  lat              Float?
+  lng              Float?
+  geom             Unsupported("geometry(Point, 4326)")?
+  foto_kejadian    String?
+  
+  asset_id         String?  
+  is_valid         Boolean  @default(false)
+  
+  asset            Asset?   @relation(fields: [asset_id], references: [id], onDelete: SetNull)
+  maintenance_ticket MaintenanceTicket?
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model MaintenanceTicket {
+  id               String       @id @default(cuid())
+  report_id        String       @unique
+  asset_id         String
+  technician_id    String?      
+  
+  status           TicketStatus @default(TERVALIDASI)
+  prioritas        String       @default("NORMAL") 
+  
+  instruksi_admin  String?
+  catatan_teknisi  String?
+  foto_hasil       String?
+  
+  deadline_at      DateTime?    
+  started_at       DateTime?
+  finished_at      DateTime?
+
+  report           Report       @relation(fields: [report_id], references: [id], onDelete: Restrict)
+  asset            Asset        @relation(fields: [asset_id], references: [id], onDelete: Restrict)
+  technician       User?        @relation(fields: [technician_id], references: [id], onDelete: SetNull)
+
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+}
+
+// ==========================================
+// 6. SPATIAL DATA (GEOPROCESSING)
+// ==========================================
+
+model RegionBoundary {
+  id          String   @id @default(cuid())
+  nama_desa   String
+  kecamatan   String?
+  
+  geom        Unsupported("geometry(MultiPolygon, 4326)")?
+  metadata    Json     @default("{}")
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([geom], type: Gist) 
+}
+
+// ==========================================
+// 7. BROADCAST & COMMUNICATION ENGINE (FASE 7)
+// ==========================================
+
+model Announcement {
+  id           String             @id @default(cuid())
+  title        String
+  content      String             @db.Text
+  target       AnnouncementTarget @default(SEMUA)
+  is_important Boolean            @default(false)
+  expires_at   DateTime?          // Jika NULL, berarti berlaku selamanya
+  
+  author_id    String
+  author       User               @relation("AnnouncementAuthor", fields: [author_id], references: [id], onDelete: Restrict)
+  
+  // Relasi ke tabel Read Receipt
+  acknowledgments AnnouncementAck[]
+
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  
+  @@index([target, is_important])
+}
+
+// Tabel Pivot untuk mencatat "Tanda Terima / Saya Mengerti"
+model AnnouncementAck {
+  id              String       @id @default(cuid())
+  announcement_id String
+  user_id         String
+  read_at         DateTime     @default(now())
+
+  announcement    Announcement @relation(fields: [announcement_id], references: [id], onDelete: Cascade)
+  user            User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  // Memastikan 1 user hanya bisa klik "Saya Mengerti" 1 kali untuk 1 pengumuman
+  @@unique([announcement_id, user_id]) 
+}
