@@ -10,17 +10,33 @@ import { Request, Response, NextFunction } from 'express';
  */
 export const fileToBody = (targetField: string, folderName: string) => {
     return (req: Request, res: Response, next: NextFunction) => {
-
-        // Jika ada file yang berhasil di-upload oleh Multer
+        // A. Single file upload (.single())
         if (req.file) {
-            // Kita buat URL Path relatif (Contoh output: "/uploads/reports/1718291029-a1b2c3.jpg")
-            // Path ini yang akan disimpan ke database PostgreSQL
-            const localPath = `/uploads/${folderName}/${req.file.filename}`;
-
-            req.body[targetField] = localPath;
+            req.body[targetField] = `/uploads/${folderName}/${req.file.filename}`;
         }
 
-        // Lanjutkan perjalanan ke Zod Validation / Controller berikutnya
+        // B. Multiple files upload / fields (.fields() or .array())
+        if (req.files) {
+            // 1. Jika di-upload menggunakan .array()
+            if (Array.isArray(req.files)) {
+                req.body[targetField] = req.files.map(f => `/uploads/${folderName}/${f.filename}`);
+            } 
+            // 2. Jika di-upload menggunakan .fields()
+            else {
+                // Map primary 'foto' ke targetField (foto_kejadian atau foto_hasil)
+                if (req.files['foto'] && req.files['foto'][0]) {
+                    req.body[targetField] = `/uploads/${folderName}/${req.files['foto'][0].filename}`;
+                }
+                
+                // Map 'foto_tambahan' ke req.body.foto_tambahan
+                if (req.files['foto_tambahan']) {
+                    req.body['foto_tambahan'] = req.files['foto_tambahan'].map(
+                        f => `/uploads/${folderName}/${f.filename}`
+                    );
+                }
+            }
+        }
+
         next();
     };
 };

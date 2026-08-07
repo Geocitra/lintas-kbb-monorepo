@@ -40,4 +40,17 @@ export class ReportController {
             });
         } catch (error) { next(error); }
     }
+
+    static async trackPublicReport(req: Request, res: Response, next: NextFunction) {
+        try {
+            const ticketNumber = req.params.ticket_number as string;
+            const status = await reportService.getPublicReportStatus(ticketNumber);
+
+            res.status(200).json({
+                success: true,
+                message: 'Informasi status pelacakan laporan berhasil dimuat.',
+                data: status
+            });
+        } catch (error) { next(error); }
+    }
 }

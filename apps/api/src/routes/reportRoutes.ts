@@ -11,10 +11,17 @@ const router = Router();
 // POST /api/v1/reports/public
 router.post(
     '/public',
-    uploadImage('reports').single('foto'),     // Sedot file gambar maksimal 5MB ke folder 'reports'
-    fileToBody('foto_kejadian', 'reports'),    // Ubah local path menjadi body 'foto_kejadian' untuk Zod
+    uploadImage('reports').fields([
+        { name: 'foto', maxCount: 1 },
+        { name: 'foto_tambahan', maxCount: 5 }
+    ]),
+    fileToBody('foto_kejadian', 'reports'),
     ReportController.submitPublicReport
 );
+
+// Endpoint Publik: Melacak status laporan berdasarkan nomor tiket (Tanpa JWT)
+// GET /api/v1/reports/public/track/:ticket_number
+router.get('/public/track/:ticket_number', ReportController.trackPublicReport);
 
 // Endpoint Privat: Daftar Laporan Masuk (Admin/Kadis/Kasi)
 // GET /api/v1/reports

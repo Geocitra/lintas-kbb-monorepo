@@ -122,6 +122,7 @@ model Asset {
   
   metadata           Json           @default("{}") 
   foto_utama         String?
+  foto_tambahan      Json?
 
   kategori           Category       @relation(fields: [kategori_id], references: [id], onDelete: Restrict)
   
@@ -180,22 +181,25 @@ model AssetHistory {
 // ==========================================
 
 model Report {
-  id               String   @id @default(cuid())
-  ticket_number    String   @unique 
-  sumber_pelapor   String   
-  nama_pelapor     String
-  kontak_pelapor   String?
+  id                 String   @id @default(cuid())
+  ticket_number      String   @unique 
+  sumber_pelapor     String   
+  nama_pelapor       String?
+  kontak_pelapor     String?
   
-  judul_laporan    String
-  deskripsi        String
+  judul_laporan      String
+  deskripsi          String
+  kategori_kerusakan String?
   
   lat              Float?
   lng              Float?
   geom             Unsupported("geometry(Point, 4326)")?
   foto_kejadian    String?
+  foto_tambahan    Json?
   
   asset_id         String?  
   is_valid         Boolean  @default(false)
+  is_merged        Boolean  @default(false)
   
   asset            Asset?   @relation(fields: [asset_id], references: [id], onDelete: SetNull)
   maintenance_ticket MaintenanceTicket?
@@ -216,6 +220,7 @@ model MaintenanceTicket {
   instruksi_admin  String?
   catatan_teknisi  String?
   foto_hasil       String?
+  foto_tambahan    Json?
   
   deadline_at      DateTime?    
   started_at       DateTime?

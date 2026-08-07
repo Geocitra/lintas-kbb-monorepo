@@ -25,8 +25,11 @@ router.post('/:report_id/assign', authorizeRole(['ADMIN', 'KADIS', 'KASI']), Tic
 router.post(
     '/:ticket_id/execute',
     authorizeRole(['TEKNISI', 'KASI']),
-    uploadImage('tickets').single('foto'),  // Sedot file gambar maksimal 5MB ke folder 'tickets'
-    fileToBody('foto_hasil', 'tickets'),    // Ubah local path menjadi body 'foto_hasil' untuk Zod
+    uploadImage('tickets').fields([
+        { name: 'foto', maxCount: 1 },
+        { name: 'foto_tambahan', maxCount: 5 }
+    ]),
+    fileToBody('foto_hasil', 'tickets'),
     TicketController.execute
 );
 

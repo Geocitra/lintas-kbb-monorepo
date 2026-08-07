@@ -15,17 +15,18 @@ export const ReportPriorityEnum = z.enum(['URGENT', 'TINGGI', 'NORMAL', 'RENDAH'
 
 // A. Skema Laporan Warga Publik (Tanpa Auth)
 export const CreatePublicReportSchema = z.object({
-    nama_pelapor: z.string().min(3, { message: 'Nama pelapor wajib diisi minimal 3 karakter' }),
     kontak_pelapor: z.string().regex(/^62\d{8,13}$/, { message: 'Nomor WA harus diawali 62 dan berisi 10-15 digit' }),
     judul_laporan: z.string().min(5, { message: 'Judul laporan minimal 5 karakter' }),
     deskripsi: z.string().min(10, { message: 'Mohon jelaskan kondisi kerusakan dengan lebih detail (min 10 karakter)' }),
+    kategori_kerusakan: z.string().min(3, { message: 'Kategori kerusakan wajib dipilih' }),
     lat: z.number({ message: 'Koordinat Latitude wajib dikirim' }).min(-90).max(90, { message: 'Latitude tidak valid' }),
     lng: z.number({ message: 'Koordinat Longitude wajib dikirim' }).min(-180).max(180, { message: 'Longitude tidak valid' }),
 
     // UPDATE FASE 6: Diubah menjadi string biasa namun wajib ada isinya
     foto_kejadian: z.string().min(1, { message: 'Bukti foto wajib dikirim' }),
+    foto_tambahan: z.array(z.string()).max(5).optional(),
 
-    asset_id: z.string().cuid({ message: 'Format ID Aset tidak valid' }).optional().nullable(),
+    asset_id: z.string().cuid({ message: 'Format ID Aset tidak valid' }),
 });
 
 // B. Skema Laporan Internal (Petugas Lapangan)

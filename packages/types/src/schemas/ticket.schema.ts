@@ -27,7 +27,8 @@ export const ExecuteTicketSchema = z.object({
         .min(10, { message: 'Jelaskan apa saja yang telah diperbaiki secara detail (min 10 karakter)' }),
 
     // UPDATE FASE 6: Diubah menjadi string biasa namun wajib ada isinya
-    foto_hasil: z.string().min(1, { message: 'Foto hasil pekerjaan wajib disertakan' })
+    foto_hasil: z.string().min(1, { message: 'Foto hasil pekerjaan wajib disertakan' }),
+    foto_tambahan: z.array(z.string()).max(5).optional(),
 });
 
 // C. Skema Review oleh Admin (Quality Control)

@@ -113,6 +113,7 @@ export class TicketService {
                 data: {
                     catatan_teknisi: data.catatan_teknisi,
                     foto_hasil: data.foto_hasil,
+                    foto_tambahan: data.foto_tambahan ?? [],
                     status: 'REVIEW_ADMIN', // Wajib Review, tidak bisa langsung selesai
                     finished_at: new Date()
                 }
@@ -146,8 +147,10 @@ export class TicketService {
                     where: { id: ticket.asset_id }, data: { kondisi: 'BAIK', status_operasional: 'AKTIF' }
                 });
 
-                await tx.report.update({
-                    where: { id: ticket.report_id }, data: { is_valid: true }
+                // Tutup laporan utama dan semua laporan warga lain yang mengarah ke aset yang sama (Silent Merge)
+                await tx.report.updateMany({
+                    where: { asset_id: ticket.asset_id },
+                    data: { is_valid: true }
                 });
 
                 await tx.assetHistory.create({
@@ -157,13 +160,22 @@ export class TicketService {
                     }
                 });
 
-                // 📨 BULLMQ: KIRIM WA KE WARGA PELAPOR BAHWA KASUS SELESAI
-                if (ticket.report.kontak_pelapor) {
-                    await waQueue.add('send-wa-resolved', {
-                        phone: ticket.report.kontak_pelapor,
-                        ticketNumber: ticket.report.ticket_number,
-                        message: `*UPDATE LINTAS KBB*\n\nYth. Pelapor,\nLaporan Anda dengan Tiket *${ticket.report.ticket_number}* telah SELESAI diperbaiki oleh teknisi kami. Terima kasih atas partisipasi Anda dalam menjaga fasilitas KBB.`
-                    });
+                // 📨 BULLMQ: KIRIM WA KE SEMUA WARGA PELAPOR BAHWA KASUS SELESAI (Bulk Notification)
+                const relatedReports = await tx.report.findMany({
+                    where: {
+                        asset_id: ticket.asset_id,
+                        is_valid: true
+                    }
+                });
+
+                for (const rep of relatedReports) {
+                    if (rep.kontak_pelapor) {
+                        await waQueue.add('send-wa-resolved', {
+                            phone: rep.kontak_pelapor,
+                            ticketNumber: rep.ticket_number,
+                            message: `*UPDATE LINTAS KBB*\n\nYth. Pelapor,\nLaporan Anda dengan Tiket *${rep.ticket_number}* telah SELESAI diperbaiki oleh teknisi kami. Terima kasih atas partisipasi Anda dalam menjaga fasilitas KBB.`
+                        });
+                    }
                 }
 
                 return closedTicket;
