@@ -36,13 +36,19 @@ def main():
     else:
         print("[SUCCESS] Git pull completed successfully.")
 
-    # 2. INSTALL DEPENDENCIES
-    print("\n>>> Phase 2: Updating dependencies (pnpm install)...")
+    # 2. INSTALL DEPENDENCIES (ALL WORKSPACES)
+    print("\n>>> Phase 2: Menginstall dependensi (Frontend, Backend, WA-Gateway, dll)...")
+    # pnpm install di root otomatis meng-cover semua workspace berkat pnpm-workspace.yaml
     if not run_command("pnpm install", cwd=project_dir):
         print("[ERROR] Failed to install dependencies. Cannot guarantee app will start correctly.")
         choice = input("Do you want to continue anyway? (y/n): ")
         if choice.lower() != 'y':
             sys.exit(1)
+
+    # 2.5 BUILD SHARED PACKAGES
+    print("\n>>> Phase 2.5: Mem-build Shared Packages (@dishub/types)...")
+    # Ini penting agar Backend & Frontend bisa membaca Tipe Data (Zod Schema) yang di-share
+    run_command("pnpm --filter @dishub/types build", cwd=project_dir)
 
     # 3. GENERATE PRISMA CLIENT & SEED DATABASE
     print("\n>>> Phase 3: Synchronizing Database & Seeding...")
@@ -64,7 +70,7 @@ def main():
     print("Press Ctrl+C to terminate the application.")
     print("-" * 60)
 
-    # Start dev servers using parallel turbo (excluding wa-gateway)
+    # Start dev servers using parallel turbo (excluding wa-gateway by default if desired, adjust as needed)
     process = run_command("pnpm turbo run dev --filter=!wa-gateway", cwd=project_dir, wait=False)
 
     if process:
