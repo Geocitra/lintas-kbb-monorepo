@@ -42,7 +42,7 @@ export default function AssetBulk() {
     };
 
     return (
-        <div className="max-w-6xl mx-auto flex flex-col h-full animate-in fade-in slide-in-from-bottom-4">
+        <div className="max-w-6xl mx-auto flex flex-col min-h-full animate-in fade-in slide-in-from-bottom-4">
             <div className="flex items-center justify-between mb-8">
                 <div>
                     <nav className="text-[10px] font-black tracking-widest uppercase text-slate-400 mb-2">

@@ -22,7 +22,7 @@ export default function MyTasks() {
     const activeTasks = tasks.filter((t: any) => t.status !== 'SELESAI');
 
     return (
-        <div className="max-w-3xl mx-auto flex flex-col h-full animate-in fade-in slide-in-from-bottom-4 pb-12">
+        <div className="max-w-3xl mx-auto flex flex-col min-h-full animate-in fade-in slide-in-from-bottom-4 pb-12">
             <div className="flex flex-col mb-8">
                 <h1 className="text-2xl font-black text-slate-800 tracking-tight uppercase">Tugas Lapangan</h1>
                 <p className="text-slate-500 text-xs font-medium mt-1">

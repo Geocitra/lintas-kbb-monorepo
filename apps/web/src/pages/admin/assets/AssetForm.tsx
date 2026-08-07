@@ -94,7 +94,7 @@ export default function AssetForm() {
     if (isEditMode && isLoadingAsset) return <div className="p-12 text-center text-slate-400 font-bold uppercase tracking-widest animate-pulse">Menarik Data Aset...</div>;
 
     return (
-        <div className="max-w-5xl mx-auto flex flex-col h-full animate-in fade-in slide-in-from-bottom-4">
+        <div className="max-w-5xl mx-auto flex flex-col min-h-full animate-in fade-in slide-in-from-bottom-4">
             <div className="flex items-center justify-between mb-8">
                 <div>
                     <nav className="text-[10px] font-black tracking-widest uppercase text-slate-400 mb-2">

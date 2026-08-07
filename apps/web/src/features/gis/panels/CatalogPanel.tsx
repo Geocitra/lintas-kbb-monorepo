@@ -3,13 +3,12 @@ import { useState, useMemo } from 'react';
 import { Search, ChevronDown, FolderGit, AlertTriangle } from 'lucide-react';
 import { useGisUIStore } from '@/store/useGisUIStore';
 import { useViewportAssets, useActiveReports } from '@/hooks/useGisQueries';
-import { useMap } from 'react-leaflet';
+import { mapRegistry } from '../MapControllers';
 
 // ==========================================
 // 1. KOMPONEN: KATALOG ASET
 // ==========================================
 export function AssetCatalogPanel() {
-    const map = useMap();
     const { openPanel, closePanelsToTheRight, setSelectedAssetId, selectedAssetId } = useGisUIStore();
 
     // Tarik data dari Cache TanStack Query (Tidak akan memicu loading API baru jika tidak geser peta)
@@ -45,7 +44,10 @@ export function AssetCatalogPanel() {
     }, [assets, searchQuery]);
 
     const handleAssetClick = (asset: any) => {
-        map.flyTo([asset.lat, asset.lng], 18, { animate: true });
+        const map = mapRegistry.get();
+        if (map) {
+            map.flyTo([asset.lat, asset.lng], 18, { animate: true });
+        }
         setSelectedAssetId(asset.id);
         closePanelsToTheRight(-1);
         openPanel('detil-aset', `ID: ${asset.kode_inventaris || asset.id_asset || 'N/A'}`, asset);
@@ -137,12 +139,14 @@ export function AssetCatalogPanel() {
 // 2. KOMPONEN: KATALOG LAPORAN
 // ==========================================
 export function ReportCatalogPanel() {
-    const map = useMap();
     const { openPanel, closePanelsToTheRight, setSelectedReportId, selectedReportId } = useGisUIStore();
     const { data: reports = [], isLoading } = useActiveReports(true);
 
     const handleReportClick = (report: any) => {
-        map.flyTo([report.lat, report.lng], 18, { animate: true });
+        const map = mapRegistry.get();
+        if (map) {
+            map.flyTo([report.lat, report.lng], 18, { animate: true });
+        }
         setSelectedReportId(report.id);
         closePanelsToTheRight(-1);
         openPanel('detil-laporan', `TIKET: ${report.ticket_number}`, report);

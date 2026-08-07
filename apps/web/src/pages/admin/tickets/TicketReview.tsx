@@ -53,7 +53,7 @@ export default function TicketReview() {
     };
 
     return (
-        <div className="max-w-6xl mx-auto flex flex-col h-full animate-in fade-in slide-in-from-bottom-4">
+        <div className="max-w-6xl mx-auto flex flex-col min-h-full animate-in fade-in slide-in-from-bottom-4">
             <div className="flex items-center gap-4 mb-8">
                 <button onClick={() => navigate(-1)} className="w-10 h-10 bg-white border border-slate-200 rounded-full flex items-center justify-center text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition-colors">
                     <ArrowLeft size={18} />

@@ -108,7 +108,7 @@ export default function Dashboard() {
     };
 
     return (
-        <div className="flex flex-col h-full w-full animate-in fade-in duration-300 pb-10">
+        <div className="flex flex-col min-h-full w-full animate-in fade-in duration-300 pb-10">
 
             {/* HEADER & EXPORT ACTIONS */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">

@@ -18,10 +18,7 @@ export default function App() {
   return (
     // Membungkus seluruh aplikasi agar semua komponen bisa menggunakan useQuery (Caching)
     <QueryClientProvider client={queryClient}>
-
-      // Memasang mesin Router yang sudah dirakit
       <RouterProvider router={router} />
-
     </QueryClientProvider>
   );
 }

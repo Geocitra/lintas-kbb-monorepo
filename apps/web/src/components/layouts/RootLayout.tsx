@@ -7,29 +7,33 @@ import { socket } from '@/lib/socket';
 export default function RootLayout() {
 
     useEffect(() => {
-        // 1. Hidupkan mesin real-time saat aplikasi (React) dimuat ke browser
-        socket.connect();
-
-        // 2. Daftarkan "Telinga" (Listeners) untuk mendengarkan sinyal dari Backend
-        socket.on('NEW_REPORT', (data: any) => {
-            // Akan muncul pop-up ringan di pojok layar
+        // Handler bernama agar .off() hanya mencabut listener kita,
+        // bukan semua listener global yang sudah terdaftar di socket.ts
+        const onNewReport = (data: any) => {
             toast.error(`🚨 LAPORAN BARU MASUK!\nTiket: ${data.ticket_number}`);
-        });
-
-        socket.on('TICKET_ASSIGNED', (data: any) => {
+        };
+        const onTicketAssigned = (data: any) => {
             toast.success(`Tugas Baru Didelegasikan!\nCek Tiket: ${data.ticket_code}`);
-        });
-
-        socket.on('TICKET_EXECUTED', (_data: any) => {
+        };
+        const onTicketExecuted = (_data: any) => {
             toast.success(`Teknisi telah melapor selesai!\nMenunggu Review Admin.`);
-        });
+        };
 
-        // 3. Clean-up: Matikan socket dan copot telinga saat komponen hancur/ditutup
+        // Guard: hanya connect jika belum terhubung (mencegah double-connect di React StrictMode)
+        if (!socket.connected) {
+            socket.connect();
+        }
+
+        socket.on('NEW_REPORT', onNewReport);
+        socket.on('TICKET_ASSIGNED', onTicketAssigned);
+        socket.on('TICKET_EXECUTED', onTicketExecuted);
+
+        // Cleanup: hanya copot listener kita — JANGAN disconnect socket singleton
+        // agar React StrictMode double-invoke tidak merusak koneksi
         return () => {
-            socket.off('NEW_REPORT');
-            socket.off('TICKET_ASSIGNED');
-            socket.off('TICKET_EXECUTED');
-            socket.disconnect();
+            socket.off('NEW_REPORT', onNewReport);
+            socket.off('TICKET_ASSIGNED', onTicketAssigned);
+            socket.off('TICKET_EXECUTED', onTicketExecuted);
         };
     }, []);
 

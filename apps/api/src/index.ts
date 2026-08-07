@@ -1,10 +1,12 @@
 // apps/api/src/index.ts
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express, { Request, Response } from 'express';
 import { createServer } from 'http';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import dotenv from 'dotenv';
 import { SocketServer } from './utils/SocketServer';
 import path from 'path';
 
@@ -25,9 +27,6 @@ import masterRoutes from './routes/masterRoutes';
 // Import Pekerja Latar Belakang (BullMQ Worker)
 import { setupEscalationWorker } from './jobs/escalationJob';
 import { setupNotificationWorker } from './jobs/notificationJob';
-
-// Inisialisasi Environment Variables
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;

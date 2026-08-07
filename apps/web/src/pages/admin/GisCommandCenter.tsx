@@ -19,13 +19,10 @@ export default function GisCommandCenter() {
             {/* 1. LAPISAN DASAR: Peta Leaflet (Z-0) */}
             <div className="absolute inset-0 z-0">
                 <LintasMap />
-            </div>
-
-            {/* 2. LAPISAN TENGAH: Laci Panel dari Kiri (Z-30) */}
+            </div>            {/* 2. LAPISAN TENGAH: Laci Panel dari Kiri (Z-30) */}
             <div className="absolute top-0 bottom-0 left-0 z-30 pointer-events-none">
                 <PanelOrchestrator />
             </div>
-
             {/* 3. LAPISAN ATAS: Head-Up Display Controls (Z-40) */}
             <div className="absolute bottom-6 right-6 z-40 pointer-events-none flex flex-row items-end gap-4">
 

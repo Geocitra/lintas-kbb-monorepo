@@ -127,7 +127,7 @@ export default function ReportList() {
     ], []);
 
     return (
-        <div className="flex flex-col h-full w-full animate-in fade-in duration-300">
+        <div className="flex flex-col min-h-full w-full animate-in fade-in duration-300">
 
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                 <div>

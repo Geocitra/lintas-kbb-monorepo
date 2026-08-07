@@ -131,7 +131,7 @@ export default function AppLayout() {
             )}
 
             {/* 2. KONTEN UTAMA (Kanan) */}
-            <div className="flex-1 flex flex-col h-full min-w-0 relative">
+            <div className="flex-1 flex flex-col min-h-0 min-w-0 relative">
 
                 {/* TOPBAR / NAVBAR */}
                 <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0 shadow-sm z-30">
@@ -153,7 +153,7 @@ export default function AppLayout() {
                 </header>
 
                 {/* AREA KONTEN (Di sinilah halaman seperti Dashboard / Tabel Aset dirender) */}
-                <main className="flex-1 overflow-y-auto bg-slate-50 p-6 md:p-8 custom-scrollbar relative">
+                <main className="flex-1 min-h-0 overflow-y-auto bg-slate-50 p-6 md:p-8 custom-scrollbar">
                     <Outlet />
                 </main>
             </div>
