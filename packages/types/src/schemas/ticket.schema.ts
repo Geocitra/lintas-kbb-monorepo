@@ -16,9 +16,11 @@ export const ReviewDecisionEnum = z.enum(['APPROVE', 'REJECT']);
 // A. Skema Penugasan oleh Admin (Assignment & SLA)
 export const AssignTicketSchema = z.object({
     technician_id: z.string({ message: 'Teknisi wajib dipilih' }).cuid({ message: 'ID Teknisi tidak valid formatnya' }),
-    prioritas: TicketPriorityEnum.default('NORMAL'),
+    prioritas: TicketPriorityEnum.default('NORMAL').optional(),
     instruksi_admin: z.string({ message: 'Instruksi wajib diberikan' }).min(10, { message: 'Berikan instruksi yang jelas kepada teknisi (min 10 karakter)' }),
-    deadline_at: z.coerce.date({ message: 'Format tanggal/waktu SLA tidak valid' }).refine((date) => date > new Date(), { message: 'Deadline tidak boleh berada di masa lalu!' })
+    deadline_at: z.custom<Date>((val) => val instanceof Date || (typeof val === 'string' && !isNaN(Date.parse(val))), {
+        message: 'Format tanggal/waktu SLA tidak valid'
+    }).transform((val) => new Date(val)).refine((date) => date > new Date(), { message: 'Deadline tidak boleh berada di masa lalu!' })
 });
 
 // B. Skema Pengerjaan oleh Teknisi (Execution)

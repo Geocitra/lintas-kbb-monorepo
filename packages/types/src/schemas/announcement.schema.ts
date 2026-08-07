@@ -15,10 +15,11 @@ export const CreateAnnouncementSchema = z.object({
     title: z.string().min(5, { message: 'Judul pengumuman minimal 5 karakter' }),
     content: z.string().min(10, { message: 'Isi pengumuman minimal 10 karakter agar informatif' }),
 
-    target: AnnouncementTargetEnum.default('SEMUA'),
+    // .optional() diperlukan agar react-hook-form resolver tidak bentrok dengan ZodDefault input type
+    target: AnnouncementTargetEnum.default('SEMUA').optional(),
 
     // Socio-Engineering: Jika TRUE, Frontend akan mengunci layar (Pop-Up Wajib Baca)
-    is_important: z.boolean().default(false),
+    is_important: z.boolean().default(false).optional(),
 
     // Kapan pengumuman ini berhenti ditampilkan (Opsional)
     expires_at: z.coerce.date().optional().nullable(),

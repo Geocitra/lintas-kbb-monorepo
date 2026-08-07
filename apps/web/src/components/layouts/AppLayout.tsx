@@ -1,16 +1,30 @@
 // apps/web/src/components/layouts/AppLayout.tsx
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '@/store/useAuthStore';
 import {
     LayoutDashboard, Map, FileText, ClipboardList,
-    Settings, LogOut, Menu, X
+    Settings, LogOut, Menu, X, ShieldCheck, Megaphone, CheckSquare
 } from 'lucide-react';
+import type { Role } from '@dishub/types';
+
+// ==========================================
+// IMPORT BROADCAST MODAL GUARD
+// ==========================================
+import BroadcastModal from '@/components/ui/BroadcastModal';
+
+// Definisi Tipe Menu agar TypeScript ketat
+interface NavItem {
+    name: string;
+    path: string;
+    icon: ReactNode;
+    allowedRoles: Role[];
+}
 
 export default function AppLayout() {
     const { user, logout } = useAuthStore();
     const navigate = useNavigate();
-    const location = useLocation(); // Untuk mendeteksi menu mana yang sedang aktif
+    const location = useLocation();
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -19,17 +33,37 @@ export default function AppLayout() {
         navigate('/login');
     };
 
-    // Navigasi Dinamis (Nantinya bisa difilter berdasarkan Role)
-    const navItems = [
-        { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={18} /> },
-        { name: 'Peta Spasial', path: '/gis', icon: <Map size={18} /> },
-        { name: 'Data Aset', path: '/assets', icon: <FileText size={18} /> },
-        { name: 'Tiket Perbaikan', path: '/tickets', icon: <ClipboardList size={18} /> },
-        { name: 'Sistem Admin', path: '/admin/users', icon: <Settings size={18} /> },
+    // Navigasi Dinamis (Dilengkapi dengan Filter Role / Otoritas)
+    const navItems: NavItem[] = [
+        // Menu Eksekutif & Admin Utama
+        { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={18} />, allowedRoles: ['KADIS', 'ADMIN'] },
+        { name: 'Peta Spasial', path: '/gis', icon: <Map size={18} />, allowedRoles: ['KADIS', 'ADMIN', 'KASI'] },
+        { name: 'Inventaris Aset', path: '/assets', icon: <FileText size={18} />, allowedRoles: ['KADIS', 'ADMIN'] },
+        { name: 'Manajemen Aduan', path: '/reports', icon: <ClipboardList size={18} />, allowedRoles: ['KADIS', 'ADMIN', 'KASI'] },
+        { name: 'Tiket Perbaikan', path: '/tickets', icon: <CheckSquare size={18} />, allowedRoles: ['KADIS', 'ADMIN', 'KASI'] },
+
+        // Menu Teknisi Lapangan
+        { name: 'Tugas Saya', path: '/my-tasks', icon: <CheckSquare size={18} />, allowedRoles: ['TEKNISI', 'KASI'] },
+        { name: 'Sensus Lapangan', path: '/field-census', icon: <Map size={18} />, allowedRoles: ['TEKNISI', 'KASI'] },
+
+        // Menu Keamanan & Komando (Hanya Pimpinan)
+        { name: 'Audit Trail', path: '/audit', icon: <ShieldCheck size={18} />, allowedRoles: ['KADIS', 'ADMIN'] },
+        { name: 'Broadcast', path: '/broadcast', icon: <Megaphone size={18} />, allowedRoles: ['KADIS', 'ADMIN'] },
+        { name: 'Sistem Admin', path: '/admin/users', icon: <Settings size={18} />, allowedRoles: ['KADIS', 'ADMIN'] },
     ];
+
+    // Menyaring menu berdasarkan role user yang sedang login
+    const filteredNavItems = navItems.filter(item =>
+        user && item.allowedRoles.includes(user.role)
+    );
 
     return (
         <div className="flex h-screen w-screen overflow-hidden bg-slate-50 font-sans text-slate-800">
+
+            {/* ========================================== */}
+            {/* BROADCAST MODAL (GLOBAL GUARD)             */}
+            {/* ========================================== */}
+            <BroadcastModal />
 
             {/* 1. SIDEBAR (Kiri) */}
             <aside
@@ -49,14 +83,15 @@ export default function AppLayout() {
                     </button>
                 </div>
 
+                {/* AREA MENU DINAMIS */}
                 <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-2 custom-scrollbar">
-                    {navItems.map((item) => {
+                    {filteredNavItems.map((item) => {
                         const isActive = location.pathname.startsWith(item.path);
                         return (
                             <Link
                                 key={item.path}
                                 to={item.path}
-                                onClick={() => setIsSidebarOpen(false)} // Tutup sidebar di HP saat diklik
+                                onClick={() => setIsSidebarOpen(false)}
                                 className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-xs tracking-wide ${isActive ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}
                             >
                                 {item.icon}
@@ -66,19 +101,20 @@ export default function AppLayout() {
                     })}
                 </nav>
 
-                <div className="p-4 border-t border-white/10">
+                {/* AREA PROFIL BAWAH */}
+                <div className="p-4 border-t border-white/10 shrink-0">
                     <div className="flex items-center gap-3 px-4 py-3 bg-white/5 rounded-xl border border-white/10 mb-4">
                         <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-xs font-black uppercase">
                             {user?.name?.charAt(0) || 'U'}
                         </div>
                         <div className="flex flex-col min-w-0">
                             <span className="text-xs font-bold truncate">{user?.name}</span>
-                            <span className="text-[10px] text-slate-400 uppercase tracking-wider">{user?.role}</span>
+                            <span className="text-[9px] font-black text-blue-400 uppercase tracking-widest mt-0.5">{user?.role?.replace('_', ' ')}</span>
                         </div>
                     </div>
                     <button
                         onClick={handleLogout}
-                        className="flex items-center gap-3 w-full px-4 py-3 text-rose-400 hover:bg-rose-500/10 rounded-xl transition-colors font-bold text-xs"
+                        className="flex items-center gap-3 w-full px-4 py-3 text-rose-400 hover:bg-rose-500/10 rounded-xl transition-colors font-bold text-xs outline-none"
                     >
                         <LogOut size={18} />
                         Keluar Sistem
@@ -86,7 +122,7 @@ export default function AppLayout() {
                 </div>
             </aside>
 
-            {/* OVERLAY UNTUK MOBILE (Menggelapkan layar belakang saat sidebar terbuka) */}
+            {/* OVERLAY UNTUK MOBILE */}
             {isSidebarOpen && (
                 <div
                     className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-sm"
@@ -95,7 +131,7 @@ export default function AppLayout() {
             )}
 
             {/* 2. KONTEN UTAMA (Kanan) */}
-            <div className="flex-1 flex flex-col h-full min-w-0">
+            <div className="flex-1 flex flex-col h-full min-w-0 relative">
 
                 {/* TOPBAR / NAVBAR */}
                 <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0 shadow-sm z-30">
@@ -104,7 +140,7 @@ export default function AppLayout() {
                             <Menu size={20} />
                         </button>
                         <h2 className="hidden sm:block text-xs font-black text-slate-400 uppercase tracking-[0.2em]">
-                            Sistem Manajemen Aset Terpadu
+                            Birokrasi & Manajemen Terpadu
                         </h2>
                     </div>
 

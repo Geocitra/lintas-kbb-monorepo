@@ -1,19 +1,19 @@
 // packages/types/src/index.ts
 
 // Export dari User Schema
-export * from './schemas/user.schema';
+export * from './schemas/user.schema.js';
 
 // Export dari Asset Schema
-export * from './schemas/asset.schema';
+export * from './schemas/asset.schema.js';
 
 // Export dari Report Schema
-export * from './schemas/report.schema';
+export * from './schemas/report.schema.js';
 
 // Export dari Ticket Schema
-export * from './schemas/ticket.schema';
+export * from './schemas/ticket.schema.js';
 
 // Export dari Announcement Schema (BARU - FASE 7)
-export * from './schemas/announcement.schema';
+export * from './schemas/announcement.schema.js';
 
 // ==========================================
 // GLOBAL API RESPONSE WRAPPER

@@ -1,6 +1,6 @@
 // apps/web/src/pages/public/Lapor.tsx
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Camera, Send, Loader2, Info } from 'lucide-react';

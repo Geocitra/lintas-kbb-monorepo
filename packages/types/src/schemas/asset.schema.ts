@@ -16,12 +16,12 @@ export const CreateAssetSchema = z.object({
     kategori_id: z.string().cuid('Kategori ID tidak valid'),
     kode_inventaris: z.string().optional().nullable(),
     nama_aset: z.string().min(3, 'Nama aset minimal 3 karakter'),
-    kondisi: AssetConditionEnum.default('BAIK'),
-    status_operasional: AssetStateEnum.default('DRAFT'),
+    kondisi: AssetConditionEnum.default('BAIK').optional(),
+    status_operasional: AssetStateEnum.default('DRAFT').optional(),
     lat: z.number().min(-90).max(90).optional().nullable(),
     lng: z.number().min(-180).max(180).optional().nullable(),
     alamat_fisik: z.string().optional().nullable(),
-    metadata: z.record(z.string(), z.any()).default({}),
+    metadata: z.record(z.string(), z.any()).default({}).optional(),
     // UPDATE FASE 6: URL dihapus agar menerima local path dari Multer
     foto_utama: z.string().optional().nullable(),
 });
@@ -33,7 +33,7 @@ export const ProcurementItemSchema = z.object({
     kategori_id: z.string().cuid('Kategori ID wajib'),
     kode_inventaris: z.string().min(3, 'Kode inventaris wajib untuk barang baru'),
     nama_aset: z.string().min(3),
-    metadata: z.record(z.string(), z.any()).default({}),
+    metadata: z.record(z.string(), z.any()).default({}).optional(),
 });
 
 export const BulkProcurementSchema = z.object({
