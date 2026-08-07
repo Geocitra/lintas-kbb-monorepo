@@ -38,20 +38,25 @@ def main():
 
     # 2. INSTALL DEPENDENCIES (ALL WORKSPACES)
     print("\n>>> Phase 2: Menginstall dependensi (Frontend, Backend, WA-Gateway, dll)...")
-    # pnpm install di root otomatis meng-cover semua workspace berkat pnpm-workspace.yaml
     if not run_command("pnpm install", cwd=project_dir):
         print("[ERROR] Failed to install dependencies. Cannot guarantee app will start correctly.")
         choice = input("Do you want to continue anyway? (y/n): ")
         if choice.lower() != 'y':
             sys.exit(1)
+            
+    # 3. INSTALL PRISMA CLI SECARA GLOBAL
+    print("\n>>> Phase 3: Menginstal Prisma CLI...")
+    # Menambahkan instalasi global prisma untuk berjaga-jaga jika CLI belum terdaftar di environment
+    if not run_command("npm install -g prisma", cwd=project_dir):
+        print("[WARNING] Gagal menginstal prisma secara global, mencoba via pnpm...")
+        run_command("pnpm install -g prisma", cwd=project_dir)
 
-    # 2.5 BUILD SHARED PACKAGES
-    print("\n>>> Phase 2.5: Mem-build Shared Packages (@dishub/types)...")
-    # Ini penting agar Backend & Frontend bisa membaca Tipe Data (Zod Schema) yang di-share
+    # 4. BUILD SHARED PACKAGES
+    print("\n>>> Phase 4: Mem-build Shared Packages (@dishub/types)...")
     run_command("pnpm --filter @dishub/types build", cwd=project_dir)
 
-    # 3. GENERATE PRISMA CLIENT & SEED DATABASE
-    print("\n>>> Phase 3: Synchronizing Database & Seeding...")
+    # 5. GENERATE PRISMA CLIENT & SEED DATABASE
+    print("\n>>> Phase 5: Synchronizing Database & Seeding...")
     print("Generating Prisma Client...")
     run_command("pnpm --filter api exec prisma generate", cwd=project_dir)
 
@@ -64,8 +69,8 @@ def main():
     else:
         print("[SUCCESS] Database seeded successfully.")
 
-    # 4. RUN DEV SERVER
-    print("\n>>> Phase 4: Starting dev servers...")
+    # 6. RUN DEV SERVER
+    print("\n>>> Phase 6: Starting dev servers...")
     print("Launching LINTAS KBB Command Center services...")
     print("Press Ctrl+C to terminate the application.")
     print("-" * 60)
