@@ -175,8 +175,7 @@ export const router = createBrowserRouter([
                                 children: [
                                     { path: '/my-tasks', element: S(MyTasks) },
                                     { path: '/my-tasks/:id/execute', element: S(ExecuteTask) },
-                                    // Sensus Lapangan = GIS dalam mode terbatas (redirected via GisLayout)
-                                    { path: '/field-census', element: S(GisCommandCenter) },
+                                    // Sensus Lapangan (moved to GisLayout)
                                 ]
                             },
                         ]
@@ -189,7 +188,8 @@ export const router = createBrowserRouter([
                             {
                                 element: <RoleRoute allowedRoles={['KADIS', 'ADMIN', 'KASI', 'TEKNISI']} />,
                                 children: [
-                                    { path: '/gis', element: S(GisCommandCenter) }
+                                    { path: '/gis', element: S(GisCommandCenter) },
+                                    { path: '/field-census', element: S(GisCommandCenter) }
                                 ]
                             }
                         ]

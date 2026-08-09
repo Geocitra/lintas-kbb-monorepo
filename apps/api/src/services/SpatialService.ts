@@ -92,6 +92,9 @@ export class SpatialService {
         a.id,
         a.nama_aset,
         a.kondisi::text,
+        a.kode_inventaris,
+        a.alamat_fisik,
+        a.foto_utama,
         c.nama as kategori_nama,
         ST_Y(a.geom::geometry) as lat,
         ST_X(a.geom::geometry) as lng

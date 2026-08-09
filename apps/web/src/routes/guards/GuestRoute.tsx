@@ -22,7 +22,12 @@ export default function GuestRoute() {
     // 2. Jika SUDAH login, tendang dari halaman ini (misal: /login)
     if (isAuthenticated && user) {
         // Jika ada history URL sebelumnya, kembalikan ke sana. Jika tidak, arahkan berdasarkan Role.
-        const defaultRoute = user.role === 'TEKNISI' ? '/my-tasks' : '/dashboard';
+        let defaultRoute = '/pengumuman';
+        if (user.role === 'TEKNISI') defaultRoute = '/my-tasks';
+        else if (user.role === 'ADMIN') defaultRoute = '/admin-dashboard';
+        else if (user.role === 'KADIS') defaultRoute = '/dashboard';
+        else if (user.role === 'KASI') defaultRoute = '/reports';
+
         const from = location.state?.from?.pathname || defaultRoute;
 
         return <Navigate to={from} replace />;

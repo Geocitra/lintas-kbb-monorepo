@@ -70,13 +70,13 @@ export default function AuditTrail() {
                 let bg = 'bg-slate-100 text-slate-600 border-slate-200';
 
                 // Logika pewarnaan otomatis berdasarkan kata kunci aktivitas
-                if (action.includes('BUAT') || action.includes('BARU')) bg = 'bg-emerald-100 text-emerald-700 border-emerald-200';
-                if (action.includes('UPDATE') || action.includes('MUTASI') || action.includes('SERAH')) bg = 'bg-blue-100 text-blue-700 border-blue-200';
-                if (action.includes('HAPUS') || action.includes('AFKIR') || action.includes('TOLAK') || action.includes('BREACH')) bg = 'bg-rose-100 text-rose-700 border-rose-200';
-                if (action.includes('SELESAI') || action.includes('SETUJU')) bg = 'bg-amber-100 text-amber-700 border-amber-200';
+                if (action.includes('BUAT') || action.includes('BARU')) bg = 'text-emerald-600';
+                if (action.includes('UPDATE') || action.includes('MUTASI') || action.includes('SERAH')) bg = 'text-blue-600';
+                if (action.includes('HAPUS') || action.includes('AFKIR') || action.includes('TOLAK') || action.includes('BREACH')) bg = 'text-rose-600';
+                if (action.includes('SELESAI') || action.includes('SETUJU')) bg = 'text-amber-600';
 
                 return (
-                    <span className={`px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest border ${bg}`}>
+                    <span className={`text-[10px] font-black uppercase tracking-widest ${bg}`}>
                         {action.replace(/_/g, ' ')}
                     </span>
                 );

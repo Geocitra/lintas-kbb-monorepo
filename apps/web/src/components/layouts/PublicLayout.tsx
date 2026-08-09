@@ -74,7 +74,13 @@ export default function PublicLayout() {
 
                         {isAuthenticated ? (
                             <Link
-                                to={user?.role === 'TEKNISI' ? '/my-tasks' : '/dashboard'}
+                                to={(() => {
+                                    if (user?.role === 'ADMIN') return '/admin-dashboard';
+                                    if (user?.role === 'KADIS') return '/dashboard';
+                                    if (user?.role === 'KASI') return '/reports';
+                                    if (user?.role === 'TEKNISI') return '/my-tasks';
+                                    return '/pengumuman';
+                                })()}
                                 className="px-6 py-2.5 bg-slate-900 text-white hover:bg-blue-600 rounded-full text-xs font-black uppercase tracking-widest transition-all shadow-md shadow-slate-200 hover:-translate-y-0.5"
                             >
                                 Ke Dashboard
@@ -113,7 +119,13 @@ export default function PublicLayout() {
                         ))}
                         <div className="my-2 border-t border-slate-100"></div>
                         <Link
-                            to={isAuthenticated ? '/dashboard' : '/login'}
+                            to={isAuthenticated ? (() => {
+                                if (user?.role === 'ADMIN') return '/admin-dashboard';
+                                if (user?.role === 'KADIS') return '/dashboard';
+                                if (user?.role === 'KASI') return '/reports';
+                                if (user?.role === 'TEKNISI') return '/my-tasks';
+                                return '/pengumuman';
+                            })() : '/login'}
                             className="flex items-center justify-center gap-2 p-4 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-widest"
                         >
                             {isAuthenticated ? 'Ke Dashboard' : 'Portal Pegawai'}

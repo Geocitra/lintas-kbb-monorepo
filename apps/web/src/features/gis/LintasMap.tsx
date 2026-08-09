@@ -108,7 +108,7 @@ export default function LintasMap() {
                 )}
                 {/* Lapisan Titik Aset & Laporan */}
                 {activeLayers.includes('assets') && <AssetMarkers />}
-                {activeLayers.includes('reports') && user?.role !== 'ADMIN' && <ReportMarkers />}
+                {activeLayers.includes('reports') && user?.role && ['ADMIN', 'KADIS', 'KASI'].includes(user.role) && <ReportMarkers />}
 
             </MapContainer>
         </div>

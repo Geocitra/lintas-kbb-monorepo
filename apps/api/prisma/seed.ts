@@ -180,7 +180,8 @@ async function main() {
             lat: -6.8415,
             lng: 107.4930,
             alamat_fisik: 'Jl. Raya Padalarang No. 120, Kertajaya, Padalarang',
-            metadata: { tipe_lampu: 'LED', daya_watt: 120, produsen: 'Philips Lumileds' }
+            metadata: { tipe_lampu: 'LED', daya_watt: 120, produsen: 'Philips Lumileds' },
+            foto_utama: '/uploads/assets/pju_led.png'
         },
         {
             id: 'asset-pju-002',
@@ -192,7 +193,8 @@ async function main() {
             lat: -6.7580,
             lng: 107.4520,
             alamat_fisik: 'Jl. Raya Cikalongwetan KM 29, Mandalamukti',
-            metadata: { tipe_lampu: 'Merkuri', daya_watt: 250, produsen: 'Sylvania' }
+            metadata: { tipe_lampu: 'Merkuri', daya_watt: 250, produsen: 'Sylvania' },
+            foto_utama: '/uploads/assets/pju_merkuri.png'
         },
         {
             id: 'asset-rambu-003',
@@ -204,7 +206,8 @@ async function main() {
             lat: -6.8220,
             lng: 107.6180,
             alamat_fisik: 'Jl. Raya Lembang No. 45, Lembang',
-            metadata: { tipe_rambu: 'Larangan', diameter_cm: 60, reflektif: true }
+            metadata: { tipe_rambu: 'Larangan', diameter_cm: 60, reflektif: true },
+            foto_utama: '/uploads/assets/rambu_no_parking.png'
         },
         {
             id: 'asset-apill-004',
@@ -216,7 +219,8 @@ async function main() {
             lat: -6.8222,
             lng: 107.6185,
             alamat_fisik: 'Simpang Tiga Lembang - Jl. Maribaya, Lembang',
-            metadata: { jumlah_fase: 3, controller_model: 'ATC-2025', backup_battery: false }
+            metadata: { jumlah_fase: 3, controller_model: 'ATC-2025', backup_battery: false },
+            foto_utama: '/uploads/assets/traffic_light.png'
         },
         {
             id: 'asset-rambu-005',
@@ -228,7 +232,8 @@ async function main() {
             lat: -6.8010,
             lng: 107.5450,
             alamat_fisik: 'Jl. Kolonel Masturi Tikungan Tajam 2, Jambudipa, Cisarua',
-            metadata: { diameter_cm: 80, bahan: 'Polikarbonat Anti-Pecah' }
+            metadata: { diameter_cm: 80, bahan: 'Polikarbonat Anti-Pecah' },
+            foto_utama: '/uploads/assets/cermin_tikungan.png'
         },
         {
             id: 'asset-knd-006',
@@ -240,7 +245,8 @@ async function main() {
             lat: null,
             lng: null,
             alamat_fisik: 'Gudang Dishub Cikamuning',
-            metadata: { nomor_polisi: 'D 8120 U', kapasitas_tangga_meter: 12 }
+            metadata: { nomor_polisi: 'D 8120 U', kapasitas_tangga_meter: 12 },
+            foto_utama: null
         }
     ];
 
@@ -248,7 +254,7 @@ async function main() {
         const metadataJson = JSON.stringify(asset.metadata);
         if (asset.lat !== null && asset.lng !== null) {
             await prisma.$executeRaw`
-                INSERT INTO "Asset" (id, kategori_id, kode_inventaris, nama_aset, kondisi, status_operasional, lat, lng, alamat_fisik, geom, metadata, "createdAt", "updatedAt")
+                INSERT INTO "Asset" (id, kategori_id, kode_inventaris, nama_aset, kondisi, status_operasional, lat, lng, alamat_fisik, geom, metadata, foto_utama, "createdAt", "updatedAt")
                 VALUES (
                     ${asset.id}, 
                     ${asset.kategori_id}, 
@@ -261,13 +267,14 @@ async function main() {
                     ${asset.alamat_fisik}, 
                     ST_SetSRID(ST_MakePoint(${asset.lng}, ${asset.lat}), 4326), 
                     ${metadataJson}::jsonb, 
+                    ${asset.foto_utama},
                     NOW(), 
                     NOW()
                 )
             `;
         } else {
             await prisma.$executeRaw`
-                INSERT INTO "Asset" (id, kategori_id, kode_inventaris, nama_aset, kondisi, status_operasional, lat, lng, alamat_fisik, geom, metadata, "createdAt", "updatedAt")
+                INSERT INTO "Asset" (id, kategori_id, kode_inventaris, nama_aset, kondisi, status_operasional, lat, lng, alamat_fisik, geom, metadata, foto_utama, "createdAt", "updatedAt")
                 VALUES (
                     ${asset.id}, 
                     ${asset.kategori_id}, 
@@ -280,6 +287,7 @@ async function main() {
                     ${asset.alamat_fisik}, 
                     NULL, 
                     ${metadataJson}::jsonb, 
+                    ${asset.foto_utama},
                     NOW(), 
                     NOW()
                 )
@@ -333,7 +341,7 @@ async function main() {
             kategori_kerusakan: 'Mati Total / Tidak Berfungsi',
             lat: -6.8416,
             lng: 107.4931,
-            foto_kejadian: 'bukti_pju_padalarang_mati.jpg',
+            foto_kejadian: '/uploads/reports/bukti_pju_padalarang_mati.jpg',
             asset_id: 'asset-pju-001',
             is_valid: true,
             is_merged: false
@@ -349,7 +357,7 @@ async function main() {
             kategori_kerusakan: 'Rusak Fisik / Patah',
             lat: -6.8221,
             lng: 107.6181,
-            foto_kejadian: 'bukti_rambu_lembang_penyok.jpg',
+            foto_kejadian: '/uploads/reports/bukti_rambu_lembang_penyok.jpg',
             asset_id: 'asset-rambu-003',
             is_valid: true,
             is_merged: false
@@ -365,7 +373,7 @@ async function main() {
             kategori_kerusakan: 'Mati Total / Tidak Berfungsi',
             lat: -6.8223,
             lng: 107.6186,
-            foto_kejadian: 'bukti_apill_lembang_error.jpg',
+            foto_kejadian: '/uploads/reports/bukti_apill_lembang_error.jpg',
             asset_id: 'asset-apill-004',
             is_valid: true,
             is_merged: false
@@ -381,7 +389,7 @@ async function main() {
             kategori_kerusakan: 'Hilang / Dicuri',
             lat: -6.8011,
             lng: 107.5451,
-            foto_kejadian: 'bukti_cermin_cisarua_hilang.jpg',
+            foto_kejadian: '/uploads/reports/bukti_cermin_cisarua_hilang.jpg',
             asset_id: 'asset-rambu-005',
             is_valid: true,
             is_merged: false

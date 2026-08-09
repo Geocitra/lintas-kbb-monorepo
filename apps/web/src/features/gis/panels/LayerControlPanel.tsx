@@ -19,7 +19,7 @@ export default function LayerControlPanel() {
 
     const featureLayers = [
         { id: 'assets', label: 'Aset Dishub KBB', desc: 'PJU, Rambu, & Fasilitas' },
-        ...(user?.role !== 'ADMIN' ? [
+        ...((user?.role && ['ADMIN', 'KADIS', 'KASI'].includes(user.role)) ? [
             { id: 'reports', label: 'Radar Pengaduan', desc: 'Laporan warga & petugas' }
         ] : []),
         { id: 'boundaries', label: 'Batas Administrasi', desc: 'Batas wilayah Desa KBB' }

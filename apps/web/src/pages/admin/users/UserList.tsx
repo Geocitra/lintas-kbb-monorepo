@@ -8,11 +8,11 @@ import { api } from '@/lib/api';
 import { DataTable } from '@/components/ui/DataTable';
 
 const ROLE_BADGE: Record<string, { label: string; cls: string }> = {
-    KADIS:      { label: 'Kepala Dinas', cls: 'bg-purple-100 text-purple-700 border border-purple-200' },
-    ADMIN:      { label: 'Admin Sistem', cls: 'bg-blue-100 text-blue-700 border border-blue-200' },
-    KASI:       { label: 'Kepala Seksi', cls: 'bg-amber-100 text-amber-700 border border-amber-200' },
-    TEKNISI:    { label: 'Teknisi',      cls: 'bg-emerald-100 text-emerald-700 border border-emerald-200' },
-    MASYARAKAT: { label: 'Masyarakat',  cls: 'bg-slate-100 text-slate-600 border border-slate-200' },
+    KADIS:      { label: 'Kepala Dinas', cls: 'text-purple-600 font-bold' },
+    ADMIN:      { label: 'Admin Sistem', cls: 'text-blue-600 font-bold' },
+    KASI:       { label: 'Kepala Seksi', cls: 'text-amber-600 font-bold' },
+    TEKNISI:    { label: 'Teknisi',      cls: 'text-emerald-600 font-bold' },
+    MASYARAKAT: { label: 'Masyarakat',  cls: 'text-slate-500 font-bold' },
 };
 
 export default function UserList() {
@@ -61,9 +61,9 @@ export default function UserList() {
             header: 'ROLE',
             cell: ({ getValue }) => {
                 const role = getValue() as string;
-                const badge = ROLE_BADGE[role] || { label: role, cls: 'bg-slate-100 text-slate-600' };
+                const badge = ROLE_BADGE[role] || { label: role, cls: 'text-slate-500' };
                 return (
-                    <span className={`px-2 py-0.5 text-[9px] font-black uppercase tracking-widest ${badge.cls}`}>
+                    <span className={`text-[10px] uppercase tracking-widest ${badge.cls}`}>
                         {badge.label}
                     </span>
                 );

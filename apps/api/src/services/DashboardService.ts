@@ -46,6 +46,36 @@ export class DashboardService {
             take: 10
         });
 
+        // 6. Statistik Tambahan untuk KADIS
+        const totalReports = await prisma.report.count();
+        
+        const activeTickets = await prisma.maintenanceTicket.count({
+            where: {
+                status: {
+                    in: ['LAPORAN_MASUK', 'TERVALIDASI', 'DITUGASKAN', 'DIKERJAKAN', 'REVIEW_ADMIN']
+                }
+            }
+        });
+
+        const startOfMonth = new Date();
+        startOfMonth.setDate(1);
+        startOfMonth.setHours(0, 0, 0, 0);
+        const completedThisMonth = await prisma.maintenanceTicket.count({
+            where: {
+                status: 'SELESAI',
+                finished_at: { gte: startOfMonth }
+            }
+        });
+
+        const slaBreached = await prisma.maintenanceTicket.count({
+            where: {
+                status: {
+                    notIn: ['SELESAI', 'DITOLAK']
+                },
+                deadline_at: { lt: new Date() }
+            }
+        });
+
         return {
             overview: {
                 total_aset: totalAssets,
@@ -55,7 +85,11 @@ export class DashboardService {
                 kategori: formattedCategoryDist,
                 laporan: reportRatio.map(item => ({ label: item.sumber_pelapor, value: item._count.id }))
             },
-            critical_assets: criticalAssets
+            critical_assets: criticalAssets,
+            totalReports,
+            activeTickets,
+            completedThisMonth,
+            slaBreached
         };
     }
 

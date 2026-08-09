@@ -2,7 +2,8 @@
 import { useState, useMemo } from 'react';
 import { Search, ChevronDown, FolderGit, AlertTriangle } from 'lucide-react';
 import { useGisUIStore } from '@/store/useGisUIStore';
-import { useViewportAssets, useActiveReports } from '@/hooks/useGisQueries';
+import { useActiveReports } from '@/hooks/useGisQueries';
+import { useAssets } from '@/hooks/useAssetQueries';
 import { mapRegistry } from '../MapControllers';
 
 // ==========================================
@@ -11,10 +12,9 @@ import { mapRegistry } from '../MapControllers';
 export function AssetCatalogPanel() {
     const { openPanel, closePanelsToTheRight, setSelectedAssetId, selectedAssetId } = useGisUIStore();
 
-    // Tarik data dari Cache TanStack Query (Tidak akan memicu loading API baru jika tidak geser peta)
-    const bounds = useGisUIStore(state => state.mapBounds);
-    const zoom = useGisUIStore(state => state.mapZoom);
-    const { data: assets = [], isLoading } = useViewportAssets(bounds, zoom, true);
+    // Mengambil seluruh aset spasial terdaftar agar bisa dicari dan diklik untuk terbang ke peta
+    const { data: assetResponse, isLoading } = useAssets(1, 1000, { is_spatial: true });
+    const assets = assetResponse?.data || [];
 
     const [searchQuery, setSearchQuery] = useState('');
     const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
@@ -34,7 +34,7 @@ export function AssetCatalogPanel() {
                 asset.jenis?.toLowerCase().includes(query);
 
             if (matches) {
-                const cat = asset.kategori_nama || 'Kategori Lainnya';
+                const cat = asset.kategori_nama || asset.kategori?.nama || 'Kategori Lainnya';
                 if (!groups[cat]) groups[cat] = [];
                 groups[cat].push(asset);
             }

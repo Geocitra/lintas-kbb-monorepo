@@ -13,7 +13,7 @@ export default function GisLayout() {
     // Navigasi Sidebar Peta
     const sidebarNav = [
         { type: 'katalog-aset' as PanelType, icon: <FolderGit size={20} />, label: 'Katalog Aset' },
-        ...(user?.role !== 'ADMIN' ? [
+        ...((user?.role && ['ADMIN', 'KADIS', 'KASI'].includes(user.role)) ? [
             { type: 'katalog-laporan' as PanelType, icon: <AlertTriangle size={20} />, label: 'Aduan Masuk' }
         ] : []),
         { type: 'konfigurasi' as PanelType, icon: <Settings size={20} />, label: 'Konfigurasi' },
@@ -67,7 +67,13 @@ export default function GisLayout() {
 
                     <div className="flex flex-col gap-2 w-full px-2">
                         <Link
-                            to="/dashboard"
+                            to={(() => {
+                                if (user?.role === 'ADMIN') return '/admin-dashboard';
+                                if (user?.role === 'KADIS') return '/dashboard';
+                                if (user?.role === 'KASI') return '/reports';
+                                if (user?.role === 'TEKNISI') return '/my-tasks';
+                                return '/';
+                            })()}
                             className="w-full aspect-square flex flex-col items-center justify-center gap-1 rounded-xl text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition-colors"
                             title="Kembali ke Dashboard"
                         >
