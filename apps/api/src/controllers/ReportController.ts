@@ -21,7 +21,6 @@ export class ReportController {
             });
         } catch (error) { next(error); }
     }
-
     static async index(req: Request, res: Response, next: NextFunction) {
         try {
             const page = parseInt(req.query.page as string) || 1;
@@ -30,7 +29,10 @@ export class ReportController {
                 ? req.query.is_valid === 'true'
                 : undefined;
 
-            const { reports, total } = await reportService.getAllReports(page, limit, isValid);
+            const user = (req as any).user;
+            const seksiId = user?.role === 'KASI' ? user?.seksi_id : undefined;
+
+            const { reports, total } = await reportService.getAllReports(page, limit, isValid, seksiId);
 
             res.status(200).json({
                 success: true,
@@ -40,7 +42,6 @@ export class ReportController {
             });
         } catch (error) { next(error); }
     }
-
     static async trackPublicReport(req: Request, res: Response, next: NextFunction) {
         try {
             const ticketNumber = req.params.ticket_number as string;

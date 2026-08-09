@@ -2,6 +2,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { AuthService } from '../services/AuthService';
 import { UserLoginSchema } from '@dishub/types';
+import prisma from '../config/database';
 
 const authService = new AuthService();
 
@@ -46,5 +47,21 @@ export class AuthController {
         } catch (error) {
             next(error);
         }
+    }
+
+    // Endpoint: GET /api/v1/auth/users — ADMIN only
+    static async getAllUsers(req: Request, res: Response, next: NextFunction) {
+        try {
+            const users = await prisma.user.findMany({
+                select: {
+                    id: true, name: true, email: true, nip: true,
+                    role: true, no_wa: true, is_active: true,
+                    seksi: { select: { id: true, nama_seksi: true } },
+                    createdAt: true,
+                },
+                orderBy: { createdAt: 'desc' },
+            });
+            res.status(200).json({ success: true, data: users });
+        } catch (error) { next(error); }
     }
 }

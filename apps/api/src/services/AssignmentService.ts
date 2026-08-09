@@ -134,4 +134,21 @@ export class AssignmentService {
             return returned;
         });
     }
+
+    async getAssignments() {
+        return await prisma.assetAssignment.findMany({
+            include: {
+                asset: {
+                    select: {
+                        id: true,
+                        nama_aset: true,
+                        kode_inventaris: true,
+                    }
+                },
+                user: { select: { id: true, name: true, nip: true } },
+                assignor: { select: { id: true, name: true } }
+            },
+            orderBy: { assigned_at: 'desc' }
+        });
+    }
 }

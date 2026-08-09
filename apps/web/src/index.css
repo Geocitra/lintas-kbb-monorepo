@@ -5,7 +5,7 @@
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
-/* Base styling untuk mematikan scrollbar & default margin */
+/* Base — Sharp Corner Design System */
 @layer base {
   html, body {
     @apply m-0 p-0 h-screen w-screen bg-slate-50 text-slate-800 antialiased;
@@ -13,22 +13,37 @@
   #root {
     @apply h-screen w-screen overflow-hidden;
   }
+
+  /* GLOBAL ROUNDED-NONE: Sharp corners untuk UI elements (bukan Leaflet) */
+  *:not(.leaflet-container):not(.leaflet-container *):not(.leaflet-popup-content-wrapper):not(.leaflet-popup-tip-container) {
+    border-radius: 0 !important;
+  }
+
+  /* Input & Button reset */
+  input, textarea, select, button {
+    @apply outline-none;
+  }
 }
 
-/* Custom Utilities (Scrollbar, dll) yang kita selamatkan dari kode lama Anda */
+/* Custom Utilities */
 @layer utilities {
-  .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+  /* Scrollbar tipis elegan */
+  .custom-scrollbar::-webkit-scrollbar { width: 4px; }
   .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-  .custom-scrollbar::-webkit-scrollbar-thumb { 
-    background: #cbd5e1; 
-    border-radius: 10px; 
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #334155;
   }
-  .custom-scrollbar:hover::-webkit-scrollbar-thumb { background: #94a3b8; }
-  
-  /* Utilities animasi untuk panel & notif */
+  .custom-scrollbar:hover::-webkit-scrollbar-thumb { background: #475569; }
+
+  /* Animasi fade-in */
   .fade-in { animation: fadeIn 0.3s ease-in-out; }
   @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Utility untuk teks uppercase tracking */
+  .label-caps {
+    @apply text-[10px] font-black uppercase tracking-widest text-slate-400;
   }
 }

@@ -8,4 +8,8 @@ const router = Router();
 // GET /api/v1/spatial/boundaries?zoom=15
 router.get('/boundaries', SpatialController.getBoundaries);
 
+// Endpoint GIS Viewport: Diambil oleh Map saat user bergerak/zoom
+// GET /api/v1/spatial/viewport?minLat=..&minLng=..&maxLat=..&maxLng=..&zoom=..
+router.get('/viewport', SpatialController.getViewport);
+
 export default router;

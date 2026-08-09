@@ -1,8 +1,10 @@
 // apps/web/src/features/gis/panels/LayerControlPanel.tsx
 import { Layers, Sliders, Moon, Sun, Map as MapIcon, Check } from 'lucide-react';
 import { useGisUIStore } from '@/store/useGisUIStore';
+import { useAuthStore } from '@/store/useAuthStore';
 
 export default function LayerControlPanel() {
+    const { user } = useAuthStore();
     const {
         activeBaseMap, setActiveBaseMap,
         mapOpacity, setMapOpacity,
@@ -17,7 +19,9 @@ export default function LayerControlPanel() {
 
     const featureLayers = [
         { id: 'assets', label: 'Aset Dishub KBB', desc: 'PJU, Rambu, & Fasilitas' },
-        { id: 'reports', label: 'Radar Pengaduan', desc: 'Laporan warga & petugas' },
+        ...(user?.role !== 'ADMIN' ? [
+            { id: 'reports', label: 'Radar Pengaduan', desc: 'Laporan warga & petugas' }
+        ] : []),
         { id: 'boundaries', label: 'Batas Administrasi', desc: 'Batas wilayah Desa KBB' }
     ];
 

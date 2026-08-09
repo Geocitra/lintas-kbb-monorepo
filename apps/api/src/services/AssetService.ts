@@ -36,17 +36,41 @@ export class AssetService {
     }
 
     // Get All dengan Pagination (Bisa difilter) (Fase 1)
-    async getAllAssets(page: number = 1, limit: number = 10) {
+    async getAllAssets(
+        page: number = 1, 
+        limit: number = 10, 
+        filters?: { search?: string; status?: string; is_spatial?: boolean }
+    ) {
         const skip = (page - 1) * limit;
+        const where: any = {};
+
+        if (filters?.status) {
+            where.status_operasional = filters.status;
+        }
+
+        if (filters?.is_spatial !== undefined) {
+            where.kategori = {
+                is_spatial: filters.is_spatial
+            };
+        }
+
+        if (filters?.search) {
+            where.OR = [
+                { nama_aset: { contains: filters.search, mode: 'insensitive' } },
+                { kode_inventaris: { contains: filters.search, mode: 'insensitive' } },
+                { alamat_fisik: { contains: filters.search, mode: 'insensitive' } }
+            ];
+        }
 
         const [assets, total] = await Promise.all([
             prisma.asset.findMany({
+                where,
                 skip,
                 take: limit,
                 include: { kategori: true },
                 orderBy: { createdAt: 'desc' }
             }),
-            prisma.asset.count()
+            prisma.asset.count({ where })
         ]);
 
         return { assets, total };

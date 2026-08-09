@@ -58,4 +58,17 @@ export class AssignmentController {
             next(error);
         }
     }
+
+    static async listAssignments(req: Request, res: Response, next: NextFunction) {
+        try {
+            const data = await assignmentService.getAssignments();
+            res.status(200).json({
+                success: true,
+                message: 'Daftar penugasan/peminjaman aset berhasil dimuat',
+                data
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
 }

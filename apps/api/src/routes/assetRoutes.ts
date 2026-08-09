@@ -34,7 +34,7 @@ router.post('/procurement/bulk', authorizeRole(['ADMIN', 'KADIS']), AssetControl
 // Sensus Lapangan (Hanya Teknisi & Kasi yang sedang patroli) - Membawa Foto Bukti
 router.post(
     '/field-census',
-    authorizeRole(['TEKNISI', 'KASI']),
+    authorizeRole(['TEKNISI']),
     uploadImage('assets').single('foto'),
     fileToBody('foto_utama', 'assets'),
     AssetController.fieldCensus

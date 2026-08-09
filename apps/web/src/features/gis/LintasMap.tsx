@@ -6,11 +6,10 @@ import 'leaflet/dist/leaflet.css';
 
 import { useGisUIStore } from '@/store/useGisUIStore';
 import { useBoundaries } from '@/hooks/useGisQueries';
+import { useAuthStore } from '@/store/useAuthStore';
 import MapControllers from './MapControllers';
-
 import AssetMarkers from './AssetMarkers';
 import ReportMarkers from './ReportMarkers';
-
 // Fix untuk Leaflet Default Icon issue di Vite
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -20,7 +19,7 @@ L.Icon.Default.mergeOptions({
 });
 
 export default function LintasMap() {
-    // 1. Tarik State UI dari Zustand
+    const { user } = useAuthStore();
     const activeBaseMap = useGisUIStore((state) => state.activeBaseMap);
     const mapOpacity = useGisUIStore((state) => state.mapOpacity);
     const activeLayers = useGisUIStore((state) => state.activeLayers);
@@ -107,10 +106,9 @@ export default function LintasMap() {
                         interactive={false} // Matikan klik pada poligon agar tidak mengganggu klik marker
                     />
                 )}
-
                 {/* Lapisan Titik Aset & Laporan */}
                 {activeLayers.includes('assets') && <AssetMarkers />}
-                {activeLayers.includes('reports') && <ReportMarkers />}
+                {activeLayers.includes('reports') && user?.role !== 'ADMIN' && <ReportMarkers />}
 
             </MapContainer>
         </div>

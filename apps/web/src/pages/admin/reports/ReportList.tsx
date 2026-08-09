@@ -1,4 +1,3 @@
-// apps/web/src/pages/admin/reports/ReportList.tsx
 import { useState, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -12,8 +11,10 @@ import { useReports } from '@/hooks/useReportQueries';
 import { useAssignTicket } from '@/hooks/useTicketQueries';
 import { AssignTicketSchema, type AssignTicketDTO } from '@dishub/types';
 import { api } from '@/lib/api';
+import { useAuthStore } from '@/store/useAuthStore';
 
 export default function ReportList() {
+    const { user } = useAuthStore();
     const [page, setPage] = useState(1);
     const limit = 10;
 
@@ -29,7 +30,16 @@ export default function ReportList() {
         queryKey: ['technicians'],
         queryFn: async () => await api.get('/users') // Berasal dari MasterController
     });
-    const technicians = usersData?.data?.filter((u: any) => u.role === 'TEKNISI' || u.role === 'KASI') || [];
+
+    const technicians = useMemo(() => {
+        const rawUsers = usersData?.data || [];
+        const filtered = rawUsers.filter((u: any) => u.role === 'TEKNISI');
+        const currentUser = user as any;
+        if (currentUser?.role === 'KASI' && currentUser?.seksi_id) {
+            return filtered.filter((u: any) => u.seksi?.id === currentUser.seksi_id);
+        }
+        return filtered;
+    }, [usersData, user]);
 
     // Form Setup
     const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<AssignTicketDTO>({
@@ -54,7 +64,7 @@ export default function ReportList() {
             accessorKey: 'ticket_number',
             header: 'KODE TIKET',
             cell: (info) => (
-                <span className="font-mono text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-1 rounded-md border border-blue-100">
+                <span className="font-mono text-[11px] font-black text-blue-600">
                     {info.getValue() as string}
                 </span>
             )
@@ -91,16 +101,35 @@ export default function ReportList() {
             }
         },
         {
-            accessorKey: 'status',
+            // REFACTOR: Mengubah dari accessorKey menjadi id untuk komputasi aman (Type Safety & Defensive Programming)
+            id: 'status',
             header: 'STATUS',
             cell: (info) => {
-                const status = (info.getValue() as string).toUpperCase();
-                let badge = 'bg-slate-100 text-slate-600';
-                if (status === 'MASUK') badge = 'bg-rose-100 text-rose-700 animate-pulse';
-                if (status === 'PROSES PERBAIKAN') badge = 'bg-blue-100 text-blue-700';
-                if (status === 'SELESAI') badge = 'bg-emerald-100 text-emerald-700';
+                const row = info.row.original;
 
-                return <span className={`px-3 py-1 rounded-full text-[9px] font-black tracking-widest uppercase ${badge}`}>{status}</span>;
+                // Mencegah 'undefined' dengan membaca relasi bersarang & fallback value
+                let rawStatus = row.maintenance_ticket?.status;
+
+                if (!rawStatus) {
+                    rawStatus = row.is_valid
+                        ? 'LAPORAN MASUK'
+                        : (row.is_valid === false ? 'SPAM / DITOLAK' : 'MENUNGGU VALIDASI');
+                }
+
+                const status = String(rawStatus).toUpperCase();
+
+                let colorClass = 'text-slate-600';
+                if (status.includes('MASUK') || status.includes('MENUNGGU')) colorClass = 'text-rose-600 animate-pulse';
+                else if (status.includes('PROSES') || status.includes('DIKERJAKAN') || status.includes('DITUGASKAN')) colorClass = 'text-blue-600';
+                else if (status.includes('REVIEW')) colorClass = 'text-purple-600 animate-pulse';
+                else if (status.includes('SELESAI')) colorClass = 'text-emerald-600';
+                else if (status.includes('SPAM') || status.includes('DITOLAK')) colorClass = 'text-slate-400 line-through';
+
+                return (
+                    <span className={`text-[10px] font-black tracking-widest uppercase ${colorClass}`}>
+                        {status.replace(/_/g, ' ')}
+                    </span>
+                );
             }
         },
         {
@@ -108,8 +137,16 @@ export default function ReportList() {
             header: 'AKSI',
             cell: (info) => {
                 const row = info.row.original;
-                // Hanya bisa ditugaskan jika aset valid dan status masih "MASUK" atau "PROSES"
-                const canAssign = row.asset_id && !['SELESAI', 'DITOLAK'].includes(row.status?.toUpperCase());
+
+                // REFACTOR: Mencegah 'undefined.toUpperCase()' pada validasi CanAssign
+                let currentStatus = row.maintenance_ticket?.status;
+                if (!currentStatus) {
+                    currentStatus = row.is_valid ? 'LAPORAN_MASUK' : 'DITOLAK';
+                }
+
+                // Hanya bisa ditugaskan jika aset valid dan status masih baru
+                const unassignableStatuses = ['SELESAI', 'DITOLAK', 'SPAM', 'REVIEW_ADMIN', 'DIKERJAKAN'];
+                const canAssign = row.asset_id && !unassignableStatuses.includes(String(currentStatus).toUpperCase());
 
                 return (
                     <div className="flex items-center gap-2">
@@ -118,7 +155,7 @@ export default function ReportList() {
                             onClick={() => setSelectedReport(row)}
                             className="px-4 py-2 bg-slate-900 text-white hover:bg-blue-600 rounded-lg text-[9px] font-black uppercase tracking-widest transition-colors disabled:opacity-50 flex items-center gap-1.5"
                         >
-                            <Wrench size={12} /> Triage & Tugaskan
+                            <Wrench size={12} /> {canAssign ? 'Triage & Tugaskan' : 'Sudah Diproses'}
                         </button>
                     </div>
                 );

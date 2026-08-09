@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import type { ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
-import { Megaphone, Plus, Users, Eye } from 'lucide-react';
+import { Megaphone, Plus, Users, Eye, AlertTriangle } from 'lucide-react';
 
 import { DataTable } from '@/components/ui/DataTable';
 import { useAnnouncements } from '@/hooks/useAnnouncementQueries';
@@ -31,8 +31,8 @@ export default function AnnouncementList() {
             accessorKey: 'target',
             header: 'TARGET AUDIENS',
             cell: (info) => (
-                <span className="font-bold text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100 flex items-center gap-1.5 w-fit text-[9px] uppercase tracking-widest">
-                    <Users size={12} /> {info.getValue() as string}
+                <span className="font-bold text-slate-700 flex items-center gap-1.5 text-[10px] uppercase tracking-widest">
+                    <Users size={14} className="text-slate-500" /> {info.getValue() as string}
                 </span>
             )
         },
@@ -42,11 +42,11 @@ export default function AnnouncementList() {
             cell: (info) => {
                 const isImportant = info.getValue() as boolean;
                 return isImportant ? (
-                    <span className="px-3 py-1.5 bg-rose-100 text-rose-700 border border-rose-200 rounded-full text-[9px] font-black uppercase tracking-widest animate-pulse">
-                        🚨 FORCED POP-UP
+                    <span className="text-rose-600 text-[10px] font-black uppercase tracking-widest flex items-center gap-1">
+                        <AlertTriangle size={14} /> FORCED POP-UP
                     </span>
                 ) : (
-                    <span className="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-full text-[9px] font-black uppercase tracking-widest">
+                    <span className="text-slate-500 text-[10px] font-black uppercase tracking-widest">
                         INFORMASI BIASA
                     </span>
                 );

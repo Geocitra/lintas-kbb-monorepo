@@ -185,11 +185,12 @@ export default function MapPicker({ onLocationSelect, onAssetSelect }: MapPicker
             </div>
 
             {/* Map Container */}
-            <div className="relative w-full h-[300px] md:h-[400px] rounded-2xl overflow-hidden border-2 border-slate-200 shadow-inner z-0">
+            <div className="relative w-full h-[300px] md:h-[380px] overflow-hidden border border-slate-700 z-0">
                 <MapContainer center={position} zoom={18} scrollWheelZoom={false} className="w-full h-full">
+                    {/* Satellite tiles — Google Hybrid (jalan + label) */}
                     <TileLayer
-                        attribution='&copy; OpenStreetMap'
-                        url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+                        attribution='&copy; Google Maps'
+                        url="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}"
                     />
 
                     <MapEvents setPos={setPosition} isLocked={isLocked} />

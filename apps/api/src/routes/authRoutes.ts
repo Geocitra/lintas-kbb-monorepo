@@ -17,4 +17,7 @@ router.post('/login', AuthController.login);
 // Harus menyertakan "Authorization: Bearer <token>" di header
 router.get('/me', authenticateJWT, AuthController.me);
 
+// ADMIN ONLY — Manajemen User
+router.get('/users', authenticateJWT, AuthController.getAllUsers);
+
 export default router;

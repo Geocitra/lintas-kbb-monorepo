@@ -4,8 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import type { ColumnDef } from '@tanstack/react-table';
 import { format, isPast, parseISO } from 'date-fns';
 import { id } from 'date-fns/locale';
-import { AlertOctagon, CheckSquare } from 'lucide-react';
-
+import { CheckSquare, User, AlertTriangle } from 'lucide-react';
 import { DataTable } from '@/components/ui/DataTable';
 import { useAllTickets } from '@/hooks/useTicketQueries';
 
@@ -30,8 +29,9 @@ export default function TicketList() {
             accessorKey: 'technician.name',
             header: 'TEKNISI PELAKSANA',
             cell: (info) => (
-                <span className="font-bold text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100">
-                    👷 {info.getValue() as string || 'Belum Ditentukan'}
+                <span className="font-bold text-slate-700 flex items-center gap-1.5">
+                    <User size={14} className="text-slate-500" />
+                    {info.getValue() as string || 'Belum Ditentukan'}
                 </span>
             )
         },
@@ -58,8 +58,8 @@ export default function TicketList() {
                 const breached = isPast(dateObj) && !['SELESAI', 'REVIEW_ADMIN'].includes(info.row.original.status);
 
                 return (
-                    <span className={`text-[10px] font-black tracking-widest uppercase ${breached ? 'text-rose-600 bg-rose-50 px-2 py-1 rounded border border-rose-200 animate-pulse' : 'text-slate-600'}`}>
-                        {breached && <AlertOctagon size={10} className="inline mr-1" />}
+                    <span className={`text-[10px] font-black tracking-widest uppercase flex items-center gap-1 ${breached ? 'text-rose-600 animate-pulse' : 'text-slate-600'}`}>
+                        {breached && <AlertTriangle size={12} />}
                         {format(dateObj, 'dd MMM yyyy', { locale: id })}
                     </span>
                 );
@@ -70,12 +70,14 @@ export default function TicketList() {
             header: 'STATUS TIKET',
             cell: (info) => {
                 const status = info.getValue() as string;
-                let badge = 'bg-slate-100 text-slate-600';
-                if (status === 'DITUGASKAN') badge = 'bg-amber-100 text-amber-700';
-                if (status === 'REVIEW_ADMIN') badge = 'bg-blue-600 text-white animate-pulse shadow-lg';
-                if (status === 'SELESAI') badge = 'bg-emerald-100 text-emerald-700';
+                let colorClass = 'text-slate-600';
+                if (status === 'DITUGASKAN') colorClass = 'text-amber-600';
+                if (status === 'DIKERJAKAN') colorClass = 'text-blue-600';
+                if (status === 'REVIEW_ADMIN') colorClass = 'text-purple-600 animate-pulse';
+                if (status === 'SELESAI') colorClass = 'text-emerald-600';
+                if (status === 'DITOLAK') colorClass = 'text-rose-600';
 
-                return <span className={`px-3 py-1.5 rounded-full text-[9px] font-black tracking-widest uppercase ${badge}`}>{status.replace('_', ' ')}</span>;
+                return <span className={`text-[10px] font-black tracking-widest uppercase ${colorClass}`}>{status.replace('_', ' ')}</span>;
             }
         },
         {

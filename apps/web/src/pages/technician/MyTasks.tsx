@@ -83,9 +83,9 @@ export default function MyTasks() {
 
                                     {/* Tombol Eksekusi Mobile-Friendly */}
                                     {task.status === 'REVIEW_ADMIN' ? (
-                                        <div className="w-full bg-blue-50 border border-blue-200 text-blue-700 py-4 rounded-xl text-center flex items-center justify-center gap-2">
-                                            <CheckCircle2 size={18} />
-                                            <span className="text-[10px] font-black uppercase tracking-widest">Menunggu Validasi Pusat</span>
+                                        <div className="w-full text-blue-600 py-3 text-center flex items-center justify-center gap-2 font-bold uppercase tracking-widest text-[10px]">
+                                            <CheckCircle2 size={16} />
+                                            <span>Menunggu Validasi Pusat</span>
                                         </div>
                                     ) : (
                                         <button

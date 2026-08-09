@@ -71,7 +71,12 @@ export class AssetController {
         try {
             const page = parseInt(req.query.page as string) || 1;
             const limit = parseInt(req.query.limit as string) || 10;
-            const { assets, total } = await assetService.getAllAssets(page, limit);
+            const search = req.query.search as string;
+            const status = req.query.status as string;
+            const isSpatialParam = req.query.is_spatial as string;
+            const is_spatial = isSpatialParam === 'true' ? true : isSpatialParam === 'false' ? false : undefined;
+
+            const { assets, total } = await assetService.getAllAssets(page, limit, { search, status, is_spatial });
 
             res.status(200).json({
                 success: true,

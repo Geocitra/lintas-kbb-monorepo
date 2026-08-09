@@ -1,4 +1,3 @@
-// apps/api/src/services/ReportService.ts
 import prisma from '../config/database';
 import { CreatePublicReportDTO } from '@dishub/types';
 import { AppError } from '../middlewares/errorHandler';
@@ -101,20 +100,28 @@ export class ReportService {
     // ==========================================
     // 2. DAFTAR SEMUA LAPORAN (Admin)
     // ==========================================
-    async getAllReports(page: number = 1, limit: number = 10, isValid?: boolean) {
+
+    async getAllReports(page: number = 1, limit: number = 10, isValid?: boolean, seksiId?: string) {
         const skip = (page - 1) * limit;
         const where: any = {};
         if (isValid !== undefined) {
             where.is_valid = isValid;
         }
+        if (seksiId) {
+            where.asset = {
+                kategori: {
+                    seksi_id: seksiId
+                }
+            };
+        }
 
-        const [reports, total] = await Promise.all([
+        const [rawReports, total] = await Promise.all([
             prisma.report.findMany({
                 where,
                 skip,
                 take: limit,
                 include: {
-                    asset: { include: { kategori: true } },
+                    asset: { include: { kategori: { include: { seksi: true } } } },
                     maintenance_ticket: true
                 },
                 orderBy: { createdAt: 'desc' }
@@ -122,12 +129,30 @@ export class ReportService {
             prisma.report.count({ where })
         ]);
 
-        return { reports, total };
+        // REFACTOR (DTO Mapping): Menghindari UI crash karena missing property "status". 
+        // Mengimplementasikan Information Expert pattern untuk formatting data di API level.
+        const formattedReports = rawReports.map((report) => {
+            let derivedStatus = 'LAPORAN_MASUK';
+
+            if (report.maintenance_ticket?.status) {
+                derivedStatus = report.maintenance_ticket.status;
+            } else if (report.is_valid === false) {
+                derivedStatus = 'DITOLAK'; // atau SPAM
+            }
+
+            return {
+                ...report,
+                status: derivedStatus // Flattens status property untuk kemudahan konsumsi tabel React
+            };
+        });
+
+        return { reports: formattedReports, total };
     }
 
     // ==========================================
     // 3. STATUS TRACKING PUBLIK (Stateless)
     // ==========================================
+
     async getPublicReportStatus(ticketNumber: string) {
         const report = await prisma.report.findUnique({
             where: { ticket_number: ticketNumber },

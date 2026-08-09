@@ -12,44 +12,61 @@ import ProtectedRoute from './guards/ProtectedRoute';
 import GuestRoute from './guards/GuestRoute';
 import RoleRoute from './guards/RoleRoute';
 
-// 2. Import Pages secara Lazy (Hanya di-download saat halaman dikunjungi)
+// 2. Import Pages secara Lazy
 // Public & Auth
-const Landing = lazy(() => import('@/pages/public/Landing'));
-const Lapor = lazy(() => import('@/pages/public/Lapor'));
-const Track = lazy(() => import('@/pages/public/Track'));
-const Login = lazy(() => import('@/pages/auth/Login'));
+const Landing    = lazy(() => import('@/pages/public/Landing'));
+const Lapor      = lazy(() => import('@/pages/public/Lapor'));
+const Track      = lazy(() => import('@/pages/public/Track'));
+const Login      = lazy(() => import('@/pages/auth/Login'));
+
+// Shared (semua role yang sudah login)
+const Pengumuman = lazy(() => import('@/pages/shared/Pengumuman'));
+
+// KADIS — Executive Dashboard
+const KadisDashboard = lazy(() => import('@/pages/kadis/KadisDashboard'));
 
 // Admin Core
-const Dashboard = lazy(() => import('@/pages/admin/Dashboard'));
+const Dashboard  = lazy(() => import('@/pages/admin/Dashboard'));
 const GisCommandCenter = lazy(() => import('@/pages/admin/GisCommandCenter'));
 
 // Admin Assets & Audit (FASE 4)
-const AssetList = lazy(() => import('@/pages/admin/assets/AssetList'));
-const AssetForm = lazy(() => import('@/pages/admin/assets/AssetForm'));
-const AssetBulk = lazy(() => import('@/pages/admin/assets/AssetBulk'));
+const AssetList  = lazy(() => import('@/pages/admin/assets/AssetList'));
+const AssetForm  = lazy(() => import('@/pages/admin/assets/AssetForm'));
+const AssetBulk  = lazy(() => import('@/pages/admin/assets/AssetBulk'));
 const AuditTrail = lazy(() => import('@/pages/admin/AuditTrail'));
 
+// Admin Users
+const UserList   = lazy(() => import('@/pages/admin/users/UserList'));
+
 // Admin Ticketing & Triage (FASE 5)
-const ReportList = lazy(() => import('@/pages/admin/reports/ReportList'));
-const TicketList = lazy(() => import('@/pages/admin/tickets/TicketList'));
+const ReportList   = lazy(() => import('@/pages/admin/reports/ReportList'));
+const TicketList   = lazy(() => import('@/pages/admin/tickets/TicketList'));
 const TicketReview = lazy(() => import('@/pages/admin/tickets/TicketReview'));
 
+// Master Data & Assignments
+const MasterData     = lazy(() => import('@/pages/admin/master/MasterData'));
+const AssignmentList = lazy(() => import('@/pages/admin/assignments/AssignmentList'));
 // Technician Execution (FASE 5)
-const MyTasks = lazy(() => import('@/pages/technician/MyTasks'));
+const MyTasks    = lazy(() => import('@/pages/technician/MyTasks'));
 const ExecuteTask = lazy(() => import('@/pages/technician/ExecuteTask'));
 
+// Broadcast Management (FASE 6)
 const AnnouncementList = lazy(() => import('@/pages/admin/broadcast/AnnouncementList'));
 const AnnouncementForm = lazy(() => import('@/pages/admin/broadcast/AnnouncementForm'));
 
 // Errors
-const NotFound = lazy(() => import('@/pages/errors/NotFound'));
+const NotFound   = lazy(() => import('@/pages/errors/NotFound'));
 
 // Komponen Loader Transisi
 const SuspenseLoader = () => (
-    <div className="flex h-screen w-screen flex-col items-center justify-center bg-slate-50 text-slate-400">
-        <Loader2 size={32} className="animate-spin text-blue-600 mb-4" />
+    <div className="flex h-screen w-screen flex-col items-center justify-center bg-slate-950 text-slate-400">
+        <Loader2 size={32} className="animate-spin text-blue-500 mb-4" />
         <span className="text-[10px] font-black uppercase tracking-widest animate-pulse">Memuat Modul...</span>
     </div>
+);
+
+const S = (Page: React.ComponentType) => (
+    <Suspense fallback={<SuspenseLoader />}><Page /></Suspense>
 );
 
 // 3. Merakit Pohon Navigasi
@@ -64,9 +81,9 @@ export const router = createBrowserRouter([
             {
                 element: <PublicLayout />,
                 children: [
-                    { path: '/', element: <Suspense fallback={<SuspenseLoader />}><Landing /></Suspense> },
-                    { path: '/lapor', element: <Suspense fallback={<SuspenseLoader />}><Lapor /></Suspense> },
-                    { path: '/track', element: <Suspense fallback={<SuspenseLoader />}><Track /></Suspense> },
+                    { path: '/',      element: S(Landing) },
+                    { path: '/lapor', element: S(Lapor) },
+                    { path: '/track', element: S(Track) },
                 ]
             },
 
@@ -76,7 +93,7 @@ export const router = createBrowserRouter([
             {
                 element: <GuestRoute />,
                 children: [
-                    { path: '/login', element: <Suspense fallback={<SuspenseLoader />}><Login /></Suspense> }
+                    { path: '/login', element: S(Login) }
                 ]
             },
 
@@ -86,66 +103,93 @@ export const router = createBrowserRouter([
             {
                 element: <ProtectedRoute />,
                 children: [
-                    // LAYOUT 1: ADMIN STANDAR (Dengan Sidebar Teks)
+                    // LAYOUT: STANDARD APP (Sidebar)
                     {
                         element: <AppLayout />,
                         children: [
+
                             // ------------------------------------------
-                            // HANYA UNTUK KADIS & ADMIN PUSAT
+                            // SEMUA ROLE YANG SUDAH LOGIN
+                            // ------------------------------------------
+                            {
+                                element: <RoleRoute allowedRoles={['KADIS', 'ADMIN', 'KASI', 'TEKNISI', 'MASYARAKAT']} />,
+                                children: [
+                                    { path: '/pengumuman', element: S(Pengumuman) },
+                                ]
+                            },
+
+                            // ------------------------------------------
+                            // KHUSUS KEPALA DINAS (Executive View)
+                            // ------------------------------------------
+                            {
+                                element: <RoleRoute allowedRoles={['KADIS']} />,
+                                children: [
+                                    { path: '/dashboard', element: S(KadisDashboard) },
+                                ]
+                            },
+
+                            // ------------------------------------------
+                            // HANYA UNTUK ADMIN PUSAT
+                            // ------------------------------------------
+                            {
+                                element: <RoleRoute allowedRoles={['ADMIN']} />,
+                                children: [
+                                    { path: '/admin-dashboard', element: S(Dashboard) },
+                                    { path: '/assets', element: S(AssetList) },
+                                    { path: '/assets/create', element: S(AssetForm) },
+                                    { path: '/assets/:id/edit', element: S(AssetForm) },
+                                    { path: '/assets/bulk', element: S(AssetBulk) },
+                                    { path: '/audit', element: S(AuditTrail) },
+                                    { path: '/admin/users', element: S(UserList) },
+                                    { path: '/admin/master', element: S(MasterData) },
+                                    { path: '/admin/assignments', element: S(AssignmentList) },
+                                ]
+                            },
+
+                            // ------------------------------------------
+                            // KADIS + ADMIN (Broadcast Management)
                             // ------------------------------------------
                             {
                                 element: <RoleRoute allowedRoles={['KADIS', 'ADMIN']} />,
                                 children: [
-                                    { path: '/dashboard', element: <Suspense fallback={<SuspenseLoader />}><Dashboard /></Suspense> },
-
-                                    // Aset
-                                    { path: '/assets', element: <Suspense fallback={<SuspenseLoader />}><AssetList /></Suspense> },
-                                    { path: '/assets/create', element: <Suspense fallback={<SuspenseLoader />}><AssetForm /></Suspense> },
-                                    { path: '/assets/:id/edit', element: <Suspense fallback={<SuspenseLoader />}><AssetForm /></Suspense> },
-                                    { path: '/assets/bulk', element: <Suspense fallback={<SuspenseLoader />}><AssetBulk /></Suspense> },
-
-                                    // Audit (Sistem Admin)
-                                    { path: '/audit', element: <Suspense fallback={<SuspenseLoader />}><AuditTrail /></Suspense> },
-
-                                    // Broadcast & Pengumuman (FASE 6)
-                                    { path: '/broadcast', element: <Suspense fallback={<SuspenseLoader />}><AnnouncementList /></Suspense> },
-                                    { path: '/broadcast/create', element: <Suspense fallback={<SuspenseLoader />}><AnnouncementForm /></Suspense> },
+                                    { path: '/broadcast', element: S(AnnouncementList) },
+                                    { path: '/broadcast/create', element: S(AnnouncementForm) },
                                 ]
                             },
 
                             // ------------------------------------------
-                            // BISA DIAKSES ADMIN & KASI (Supervisor)
+                            // KHUSUS KASI (Supervisor/Triage/QC)
                             // ------------------------------------------
                             {
-                                element: <RoleRoute allowedRoles={['KADIS', 'ADMIN', 'KASI']} />,
+                                element: <RoleRoute allowedRoles={['KASI']} />,
                                 children: [
-                                    { path: '/reports', element: <Suspense fallback={<SuspenseLoader />}><ReportList /></Suspense> },
-                                    { path: '/tickets', element: <Suspense fallback={<SuspenseLoader />}><TicketList /></Suspense> },
-                                    { path: '/tickets/:id/review', element: <Suspense fallback={<SuspenseLoader />}><TicketReview /></Suspense> },
+                                    { path: '/reports',  element: S(ReportList) },
+                                    { path: '/tickets',  element: S(TicketList) },
+                                    { path: '/tickets/:id/review', element: S(TicketReview) },
                                 ]
                             },
 
                             // ------------------------------------------
-                            // KHUSUS PETUGAS LAPANGAN (TEKNISI & KASI)
-                            // ------------------------------------------
                             {
-                                element: <RoleRoute allowedRoles={['TEKNISI', 'KASI']} />,
+                                element: <RoleRoute allowedRoles={['TEKNISI']} />,
                                 children: [
-                                    { path: '/my-tasks', element: <Suspense fallback={<SuspenseLoader />}><MyTasks /></Suspense> },
-                                    { path: '/my-tasks/:id/execute', element: <Suspense fallback={<SuspenseLoader />}><ExecuteTask /></Suspense> },
+                                    { path: '/my-tasks', element: S(MyTasks) },
+                                    { path: '/my-tasks/:id/execute', element: S(ExecuteTask) },
+                                    // Sensus Lapangan = GIS dalam mode terbatas (redirected via GisLayout)
+                                    { path: '/field-census', element: S(GisCommandCenter) },
                                 ]
                             },
                         ]
                     },
 
-                    // LAYOUT 2: GIS COMMAND CENTER (Full Screen dengan Sidebar Mini)
+                    // LAYOUT: GIS FULL SCREEN
                     {
                         element: <GisLayout />,
                         children: [
                             {
-                                element: <RoleRoute allowedRoles={['KADIS', 'ADMIN', 'KASI']} />,
+                                element: <RoleRoute allowedRoles={['KADIS', 'ADMIN', 'KASI', 'TEKNISI']} />,
                                 children: [
-                                    { path: '/gis', element: <Suspense fallback={<SuspenseLoader />}><GisCommandCenter /></Suspense> }
+                                    { path: '/gis', element: S(GisCommandCenter) }
                                 ]
                             }
                         ]

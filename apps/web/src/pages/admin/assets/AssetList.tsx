@@ -7,16 +7,19 @@ import toast from 'react-hot-toast';
 
 import { DataTable } from '@/components/ui/DataTable';
 import { useAssets, useDeleteAsset } from '@/hooks/useAssetQueries';
-
 export default function AssetList() {
-    // State untuk Server-Side Pagination & Filtering
     const [page, setPage] = useState(1);
     const limit = 10;
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
+    const [assetTab, setAssetTab] = useState<'spasial' | 'bergerak'>('spasial');
 
-    // Custom Hooks TanStack Query
-    const { data: assetData, isLoading } = useAssets(page, limit, { search, status: statusFilter });
+    const { data: assetData, isLoading } = useAssets(page, limit, {
+        search,
+        status: statusFilter,
+        is_spatial: assetTab === 'spasial'
+    });
+
     const deleteMutation = useDeleteAsset();
 
     const handleDelete = async (id: string, nama: string) => {
@@ -36,7 +39,7 @@ export default function AssetList() {
             accessorKey: 'kode_inventaris',
             header: 'ID / KODE',
             cell: (info) => (
-                <span className="font-mono text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                <span className="font-mono text-[11px] font-black text-blue-600">
                     {info.getValue() as string || 'N/A'}
                 </span>
             )
@@ -56,12 +59,12 @@ export default function AssetList() {
             header: 'KONDISI',
             cell: (info) => {
                 const val = info.getValue() as string;
-                let color = 'bg-emerald-100 text-emerald-700';
-                if (val?.includes('RUSAK')) color = 'bg-amber-100 text-amber-700';
-                if (val?.includes('KRITIS') || val?.includes('HILANG')) color = 'bg-rose-100 text-rose-700';
+                let colorClass = 'text-emerald-600';
+                if (val?.includes('RUSAK')) colorClass = 'text-amber-600';
+                if (val?.includes('KRITIS') || val?.includes('HILANG')) colorClass = 'text-rose-600';
 
                 return (
-                    <span className={`px-3 py-1 rounded-full text-[9px] font-black tracking-widest uppercase ${color}`}>
+                    <span className={`text-[10px] font-black tracking-widest uppercase ${colorClass}`}>
                         {val.replace('_', ' ')}
                     </span>
                 );
@@ -79,12 +82,12 @@ export default function AssetList() {
                 const id = info.row.original.id;
                 const nama = info.row.original.nama_aset;
                 return (
-                    <div className="flex items-center gap-2">
-                        <Link to={`/assets/${id}/edit`} className="p-2 bg-slate-100 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit Data">
-                            <Edit size={14} />
+                    <div className="flex items-center gap-4">
+                        <Link to={`/assets/${id}/edit`} className="text-slate-500 hover:text-blue-600 transition-colors" title="Edit Data">
+                            <Edit size={16} />
                         </Link>
-                        <button onClick={() => handleDelete(id, nama)} className="p-2 bg-rose-50 text-rose-500 hover:bg-rose-600 hover:text-white rounded-lg transition-colors" title="Afkir / Hapus">
-                            <Trash2 size={14} />
+                        <button onClick={() => handleDelete(id, nama)} className="text-slate-400 hover:text-rose-600 transition-colors" title="Afkir / Hapus">
+                            <Trash2 size={16} />
                         </button>
                     </div>
                 );
@@ -116,6 +119,22 @@ export default function AssetList() {
                         <Plus size={16} strokeWidth={3} /> Tambah Satuan
                     </Link>
                 </div>
+            </div>
+
+            {/* Tab Controls */}
+            <div className="flex border-b border-slate-200 mb-6 bg-white p-1">
+                <button
+                    onClick={() => { setAssetTab('spasial'); setPage(1); }}
+                    className={`px-6 py-3 text-xs font-black uppercase tracking-widest transition-all ${assetTab === 'spasial' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-slate-400 hover:text-slate-600'}`}
+                >
+                    Aset Tidak Bergerak (Spasial)
+                </button>
+                <button
+                    onClick={() => { setAssetTab('bergerak'); setPage(1); }}
+                    className={`px-6 py-3 text-xs font-black uppercase tracking-widest transition-all ${assetTab === 'bergerak' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-slate-400 hover:text-slate-600'}`}
+                >
+                    Aset Bergerak (Logistik)
+                </button>
             </div>
 
             {/* Filter Bar */}

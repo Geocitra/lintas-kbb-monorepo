@@ -10,11 +10,12 @@ export default function GisLayout() {
 
     // Helper untuk mengecek apakah sebuah panel sedang terbuka
     const isPanelActive = (type: PanelType) => activePanels.some(p => p.type === type);
-
     // Navigasi Sidebar Peta
     const sidebarNav = [
         { type: 'katalog-aset' as PanelType, icon: <FolderGit size={20} />, label: 'Katalog Aset' },
-        { type: 'katalog-laporan' as PanelType, icon: <AlertTriangle size={20} />, label: 'Aduan Masuk' },
+        ...(user?.role !== 'ADMIN' ? [
+            { type: 'katalog-laporan' as PanelType, icon: <AlertTriangle size={20} />, label: 'Aduan Masuk' }
+        ] : []),
         { type: 'konfigurasi' as PanelType, icon: <Settings size={20} />, label: 'Konfigurasi' },
     ];
 

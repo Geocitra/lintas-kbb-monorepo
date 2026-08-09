@@ -24,7 +24,7 @@ router.post('/:report_id/assign', authorizeRole(['ADMIN', 'KADIS', 'KASI']), Tic
 // Endpoint: POST /api/v1/tickets/:ticket_id/execute
 router.post(
     '/:ticket_id/execute',
-    authorizeRole(['TEKNISI', 'KASI']),
+    authorizeRole(['TEKNISI']),
     uploadImage('tickets').fields([
         { name: 'foto', maxCount: 1 },
         { name: 'foto_tambahan', maxCount: 5 }

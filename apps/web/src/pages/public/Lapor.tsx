@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Camera, Send, Loader2, Info } from 'lucide-react';
+import { Camera, Send, Loader2, MapPin, FileText, Phone, ArrowRight, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useMutation } from '@tanstack/react-query';
 
@@ -12,44 +12,43 @@ import MapPicker from '@/components/ui/MapPicker';
 import { useTicketStorage } from '@/hooks/useTicketStorage';
 import { api } from '@/lib/api';
 
+const STEP_INFO = [
+    { num: '01', icon: <MapPin size={16} />, label: 'Lokasi Kejadian' },
+    { num: '02', icon: <Camera size={16} />, label: 'Bukti Foto' },
+    { num: '03', icon: <FileText size={16} />, label: 'Detail & Kontak' },
+];
+
+const DAMAGE_CATEGORIES = [
+    'Rusak Fisik / Patah',
+    'Mati Total / Tidak Berfungsi',
+    'Hilang / Dicuri',
+    'Berubah Posisi',
+    'Lainnya',
+];
+
 export default function Lapor() {
     const navigate = useNavigate();
     const { addTicket } = useTicketStorage();
-
-    // State khusus untuk file foto agar bisa di-preview
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-    // Inisialisasi Form
-    const {
-        register,
-        handleSubmit,
-        setValue,
-        formState: { errors },
-    } = useForm<CreatePublicReportDTO>({
+    const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<CreatePublicReportDTO>({
         resolver: zodResolver(CreatePublicReportSchema),
-        defaultValues: {
-            kontak_pelapor: '62', // Membantu user dengan prefix 62
-        }
+        defaultValues: { kontak_pelapor: '62' },
     });
 
-    // Mutasi (API Call) menggunakan TanStack Query
+    const watchedLat = watch('lat');
+
     const submitMutation = useMutation({
         mutationFn: async (formData: FormData) => {
-            // Kita menggunakan axios (api.ts) untuk mengirim FormData (multipart/form-data)
             const res: any = await api.post('/reports/public', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             return res.data;
         },
         onSuccess: (data) => {
-            // 1. Simpan tiket ke LocalStorage HP Warga
             addTicket(data.ticket_number);
-
-            // 2. Tampilkan Toast Sukses
-            toast.success('Laporan berhasil dikirim! Mengalihkan ke pelacakan...');
-
-            // 3. Arahkan ke halaman pelacakan
+            toast.success('Laporan berhasil dikirim!');
             navigate('/track');
         },
         onError: (error: any) => {
@@ -57,34 +56,20 @@ export default function Lapor() {
         },
     });
 
-    // Handler Perubahan Foto Kamera
     const handlePhotoCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            if (file.size > 5 * 1024 * 1024) {
-                toast.error('Ukuran foto maksimal 5MB!');
-                return;
-            }
+            if (file.size > 5 * 1024 * 1024) { toast.error('Ukuran foto maksimal 5MB!'); return; }
             setSelectedFile(file);
             setPreviewUrl(URL.createObjectURL(file));
-
-            // Beritahu React Hook Form bahwa foto sudah terisi (agar Zod tidak error)
             setValue('foto_kejadian', file.name, { shouldValidate: true });
         }
     };
 
-    // Proses Submit
     const onSubmit = (data: CreatePublicReportDTO) => {
-        if (!selectedFile) {
-            toast.error('Bukti foto kejadian wajib dilampirkan!');
-            return;
-        }
-        if (!data.asset_id || !data.lat || !data.lng) {
-            toast.error('Anda harus mengunci lokasi GPS dan memilih aset terdekat!');
-            return;
-        }
+        if (!selectedFile) { toast.error('Bukti foto kejadian wajib dilampirkan!'); return; }
+        if (!data.asset_id || !data.lat || !data.lng) { toast.error('Kunci lokasi GPS dan pilih aset yang rusak!'); return; }
 
-        // Bangun FormData
         const formData = new FormData();
         formData.append('nama_pelapor', data.nama_pelapor || '');
         formData.append('kontak_pelapor', data.kontak_pelapor);
@@ -94,190 +79,214 @@ export default function Lapor() {
         formData.append('lat', data.lat.toString());
         formData.append('lng', data.lng.toString());
         formData.append('asset_id', data.asset_id);
-
-        // NAMA FIELD HARUS 'foto' agar ditangkap oleh Multer Middleware kita!
         formData.append('foto', selectedFile);
-
-        // Tembakkan Mutasi
         submitMutation.mutate(formData);
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 flex justify-center p-4 md:p-8 font-sans">
-            <div className="w-full max-w-2xl bg-white rounded-3xl p-6 md:p-10 border border-slate-200 shadow-2xl h-fit">
+        <div className="min-h-screen font-sans" style={{ paddingTop: '72px' }}>
 
-                <div className="text-center mb-8">
-                    <span className="inline-block px-3 py-1 bg-rose-100 text-rose-600 rounded-full text-[10px] font-black uppercase tracking-widest mb-3">
-                        Layanan Darurat
-                    </span>
-                    <h1 className="text-2xl md:text-3xl font-black text-slate-800 uppercase tracking-tight">
-                        Lapor Kerusakan Aset
+            {/* HERO STRIP */}
+            <div className="bg-slate-950 text-white px-6 md:px-12 py-12 border-b border-white/5">
+                <div className="max-w-3xl mx-auto">
+                    <div className="flex items-center gap-2 mb-4">
+                        <span className="w-3 h-3 bg-rose-500 animate-pulse" />
+                        <span className="text-[10px] font-black text-rose-400 uppercase tracking-[0.3em]">
+                            Layanan Aduan Publik
+                        </span>
+                    </div>
+                    <h1 className="text-4xl md:text-5xl font-black tracking-tight uppercase mb-3">
+                        Lapor <span className="text-blue-400">Kerusakan</span> Aset
                     </h1>
-                    <p className="text-slate-500 mt-2 text-xs font-medium leading-relaxed max-w-sm mx-auto">
-                        Bantu kami menjaga infrastruktur Bandung Barat. Laporan Anda akan ditangani secepatnya.
+                    <p className="text-slate-400 text-sm leading-relaxed max-w-xl">
+                        Bantu kami menjaga infrastruktur Bandung Barat. Laporan Anda akan ditindaklanjuti dalam <strong className="text-white">1×24 jam</strong>.
                     </p>
+
+                    {/* Step indicators */}
+                    <div className="flex gap-6 mt-8">
+                        {STEP_INFO.map((s, i) => (
+                            <div key={i} className="flex items-center gap-2">
+                                <span className="text-blue-400 opacity-60">{s.icon}</span>
+                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                                    {s.num} {s.label}
+                                </span>
+                                {i < STEP_INFO.length - 1 && <span className="w-4 h-px bg-slate-700 ml-2" />}
+                            </div>
+                        ))}
+                    </div>
                 </div>
+            </div>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 text-left">
+            {/* FORM BODY */}
+            <div className="bg-slate-50 min-h-screen">
+                <div className="max-w-3xl mx-auto px-4 md:px-6 py-10">
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-0">
 
-                    {/* BAGIAN 1: LOKASI & ASET */}
-                    <div className="space-y-4">
-                        <h3 className="text-xs font-black text-slate-800 uppercase tracking-widest flex items-center gap-2 border-b border-slate-100 pb-2">
-                            <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">1</span>
-                            Lokasi Kejadian
-                        </h3>
-
-                        {/* Menggunakan MapPicker cerdas yang kita buat sebelumnya */}
-                        <div className="bg-slate-50 p-2 md:p-4 rounded-2xl border border-slate-200">
-                            <MapPicker
-                                onLocationSelect={(lat, lng) => {
-                                    setValue('lat', lat, { shouldValidate: true });
-                                    setValue('lng', lng, { shouldValidate: true });
-                                }}
-                                onAssetSelect={(assetId) => {
-                                    setValue('asset_id', assetId || '', { shouldValidate: true });
-                                }}
-                            />
-                            {(errors.lat || errors.asset_id) && (
-                                <p className="text-[10px] font-bold text-rose-500 mt-2 text-center">
-                                    ⚠️ Anda wajib mengunci lokasi dan memilih aset yang rusak!
-                                </p>
-                            )}
+                        {/* ===== SECTION 1: LOKASI ===== */}
+                        <div className="bg-white border border-slate-200 mb-4">
+                            <div className="flex items-center gap-3 px-6 py-4 border-b border-slate-100 bg-slate-950">
+                                <MapPin size={15} className="text-blue-400" />
+                                <span className="text-xs font-black text-white uppercase tracking-widest">01 — Lokasi Kejadian</span>
+                            </div>
+                            <div className="p-4">
+                                <MapPicker
+                                    onLocationSelect={(lat, lng) => {
+                                        setValue('lat', lat, { shouldValidate: true });
+                                        setValue('lng', lng, { shouldValidate: true });
+                                    }}
+                                    onAssetSelect={(assetId) => {
+                                        setValue('asset_id', assetId || '', { shouldValidate: true });
+                                    }}
+                                />
+                                {(errors.lat || errors.asset_id) && (
+                                    <p className="text-[10px] font-bold text-rose-500 mt-3 flex items-center gap-1.5">
+                                        ⚠️ Kunci lokasi GPS dan pilih aset yang rusak terlebih dahulu
+                                    </p>
+                                )}
+                                {watchedLat && (
+                                    <p className="text-[10px] font-bold text-emerald-600 mt-2 flex items-center gap-1.5">
+                                        ✓ Lokasi terkunci
+                                    </p>
+                                )}
+                            </div>
                         </div>
-                    </div>
 
-                    {/* BAGIAN 2: BUKTI FOTO */}
-                    <div className="space-y-4">
-                        <h3 className="text-xs font-black text-slate-800 uppercase tracking-widest flex items-center gap-2 border-b border-slate-100 pb-2">
-                            <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">2</span>
-                            Bukti Foto (Wajib)
-                        </h3>
-
-                        <div className="relative group">
-                            {previewUrl ? (
-                                <div className="relative w-full h-48 md:h-64 rounded-2xl overflow-hidden shadow-inner border-4 border-slate-100">
-                                    <img src={previewUrl} className="w-full h-full object-cover" alt="Preview Kejadian" />
-                                    <button
-                                        type="button"
-                                        onClick={() => { setSelectedFile(null); setPreviewUrl(null); setValue('foto_kejadian', ''); }}
-                                        className="absolute top-4 right-4 bg-rose-600 text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-lg"
-                                    >
-                                        Ganti Foto
-                                    </button>
-                                </div>
-                            ) : (
-                                <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-slate-300 rounded-2xl bg-slate-50 hover:bg-blue-50 hover:border-blue-300 transition-all cursor-pointer">
-                                    <div className="w-14 h-14 bg-white shadow-lg rounded-2xl flex items-center justify-center text-slate-400 mb-3 group-hover:text-blue-500">
-                                        <Camera size={28} />
+                        {/* ===== SECTION 2: FOTO ===== */}
+                        <div className="bg-white border border-slate-200 mb-4">
+                            <div className="flex items-center gap-3 px-6 py-4 border-b border-slate-100 bg-slate-950">
+                                <Camera size={15} className="text-blue-400" />
+                                <span className="text-xs font-black text-white uppercase tracking-widest">02 — Bukti Foto (Wajib)</span>
+                            </div>
+                            <div className="p-6">
+                                {previewUrl ? (
+                                    <div className="relative w-full h-56 overflow-hidden">
+                                        <img src={previewUrl} className="w-full h-full object-cover" alt="Preview" />
+                                        <button
+                                            type="button"
+                                            onClick={() => { setSelectedFile(null); setPreviewUrl(null); setValue('foto_kejadian', ''); }}
+                                            className="absolute top-3 right-3 bg-slate-950/80 text-white p-1.5 hover:bg-rose-600 transition-colors"
+                                        >
+                                            <X size={14} />
+                                        </button>
+                                        <div className="absolute bottom-3 left-3 bg-slate-950/70 text-white px-3 py-1 text-[10px] font-black uppercase tracking-widest">
+                                            ✓ Foto Siap
+                                        </div>
                                     </div>
-                                    <p className="text-xs font-black text-slate-700 uppercase tracking-widest">Ambil Foto Kejadian</p>
-                                    <p className="text-[10px] text-slate-400 font-medium mt-1">Gunakan Kamera HP Anda</p>
+                                ) : (
+                                    <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-slate-300 bg-slate-50 hover:bg-blue-50 hover:border-blue-400 transition-all cursor-pointer">
+                                        <div className="flex flex-col items-center gap-3">
+                                            <div className="w-12 h-12 bg-slate-100 flex items-center justify-center">
+                                                <Camera size={24} className="text-slate-400" />
+                                            </div>
+                                            <div className="text-center">
+                                                <p className="text-xs font-black text-slate-700 uppercase tracking-widest">Ambil / Pilih Foto</p>
+                                                <p className="text-[10px] text-slate-400 mt-1">JPG, PNG • Maks 5MB</p>
+                                            </div>
+                                        </div>
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            capture="environment"
+                                            className="hidden"
+                                            onChange={handlePhotoCapture}
+                                        />
+                                    </label>
+                                )}
+                                {errors.foto_kejadian && (
+                                    <p className="text-[10px] font-bold text-rose-500 mt-2">{errors.foto_kejadian.message}</p>
+                                )}
+                            </div>
+                        </div>
 
-                                    {/* HTML5 Capture: Memaksa membuka kamera hp langsung */}
+                        {/* ===== SECTION 3: DETAIL ===== */}
+                        <div className="bg-white border border-slate-200 mb-6">
+                            <div className="flex items-center gap-3 px-6 py-4 border-b border-slate-100 bg-slate-950">
+                                <FileText size={15} className="text-blue-400" />
+                                <span className="text-xs font-black text-white uppercase tracking-widest">03 — Detail & Kontak</span>
+                            </div>
+                            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                                {/* Judul */}
+                                <div className="md:col-span-2 space-y-1.5">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Judul Laporan *</label>
                                     <input
-                                        type="file"
-                                        accept="image/*"
-                                        capture="environment"
-                                        className="hidden"
-                                        onChange={handlePhotoCapture}
+                                        type="text"
+                                        {...register('judul_laporan')}
+                                        placeholder="Contoh: Lampu PJU Mati Total di Jl. Raya Padalarang"
+                                        className="w-full bg-slate-50 border border-slate-200 px-4 py-3 text-sm font-medium text-slate-800 outline-none focus:border-blue-500 transition-colors"
                                     />
-                                </label>
-                            )}
-                        </div>
-                        {errors.foto_kejadian && <p className="text-[10px] font-bold text-rose-500">{errors.foto_kejadian.message}</p>}
-                    </div>
+                                    {errors.judul_laporan && <p className="text-[10px] text-rose-500 font-bold">{errors.judul_laporan.message}</p>}
+                                </div>
 
-                    {/* BAGIAN 3: DETAIL KERUSAKAN & KONTAK */}
-                    <div className="space-y-4">
-                        <h3 className="text-xs font-black text-slate-800 uppercase tracking-widest flex items-center gap-2 border-b border-slate-100 pb-2">
-                            <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">3</span>
-                            Detail & Kontak
-                        </h3>
+                                {/* Kategori */}
+                                <div className="space-y-1.5">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Kategori Kerusakan *</label>
+                                    <select
+                                        {...register('kategori_kerusakan')}
+                                        className="w-full bg-slate-50 border border-slate-200 px-4 py-3 text-sm font-medium text-slate-800 outline-none focus:border-blue-500 transition-colors cursor-pointer"
+                                    >
+                                        <option value="">-- Pilih Jenis --</option>
+                                        {DAMAGE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                                    </select>
+                                    {errors.kategori_kerusakan && <p className="text-[10px] text-rose-500 font-bold">{errors.kategori_kerusakan.message}</p>}
+                                </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-1.5 md:col-span-2">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Judul Laporan</label>
-                                <input
-                                    type="text"
-                                    {...register('judul_laporan')}
-                                    placeholder="Contoh: Lampu PJU Mati Total"
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold outline-none focus:border-blue-500 text-slate-800"
-                                />
-                                {errors.judul_laporan && <p className="text-[10px] text-rose-500 font-bold">{errors.judul_laporan.message}</p>}
-                            </div>
+                                {/* No WA */}
+                                <div className="space-y-1.5">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                                        <Phone size={10} /> No. WhatsApp * (Awali 62)
+                                    </label>
+                                    <input
+                                        type="text"
+                                        {...register('kontak_pelapor')}
+                                        placeholder="628123456789"
+                                        className="w-full bg-slate-50 border border-slate-200 px-4 py-3 text-sm font-medium text-slate-800 outline-none focus:border-blue-500 transition-colors"
+                                    />
+                                    {errors.kontak_pelapor && <p className="text-[10px] text-rose-500 font-bold">{errors.kontak_pelapor.message}</p>}
+                                </div>
 
-                            <div className="space-y-1.5">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Kategori Kerusakan</label>
-                                <select
-                                    {...register('kategori_kerusakan')}
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold outline-none focus:border-blue-500 text-slate-800 appearance-none cursor-pointer"
-                                >
-                                    <option value="">-- Pilih Jenis Kerusakan --</option>
-                                    <option value="Rusak Fisik / Patah">Rusak Fisik / Patah</option>
-                                    <option value="Mati Total / Tidak Berfungsi">Mati Total / Tidak Berfungsi</option>
-                                    <option value="Hilang / Dicuri">Hilang / Dicuri</option>
-                                    <option value="Berubah Posisi">Berubah Posisi</option>
-                                    <option value="Lainnya">Lainnya</option>
-                                </select>
-                                {errors.kategori_kerusakan && <p className="text-[10px] text-rose-500 font-bold">{errors.kategori_kerusakan.message}</p>}
-                            </div>
+                                {/* Nama */}
+                                <div className="space-y-1.5">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Nama Anda (Opsional)</label>
+                                    <input
+                                        type="text"
+                                        {...register('nama_pelapor')}
+                                        placeholder="Boleh disamarkan / inisial"
+                                        className="w-full bg-slate-50 border border-slate-200 px-4 py-3 text-sm font-medium text-slate-800 outline-none focus:border-blue-500 transition-colors"
+                                    />
+                                </div>
 
-                            <div className="space-y-1.5">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex items-center justify-between">
-                                    <span>No. WA Anda (Awali 62)</span>
-                                    <span className="text-[8px] bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-md">Untuk Tiket</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    {...register('kontak_pelapor')}
-                                    placeholder="62812345678"
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold outline-none focus:border-blue-500 text-slate-800"
-                                />
-                                {errors.kontak_pelapor && <p className="text-[10px] text-rose-500 font-bold">{errors.kontak_pelapor.message}</p>}
-                            </div>
-
-                            <div className="space-y-1.5 md:col-span-2">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Nama Anda</label>
-                                <input
-                                    type="text"
-                                    {...register('nama_pelapor')}
-                                    placeholder="Boleh disamarkan / inisial"
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold outline-none focus:border-blue-500 text-slate-800"
-                                />
-                                {errors.nama_pelapor && <p className="text-[10px] text-rose-500 font-bold">{errors.nama_pelapor.message}</p>}
-                            </div>
-
-                            <div className="space-y-1.5 md:col-span-2">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Deskripsi Tambahan</label>
-                                <textarea
-                                    {...register('deskripsi')}
-                                    rows={3}
-                                    placeholder="Jelaskan ciri-ciri atau posisi spesifik agar mudah ditemukan teknisi..."
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-medium outline-none focus:border-blue-500 text-slate-800 resize-none"
-                                ></textarea>
-                                {errors.deskripsi && <p className="text-[10px] text-rose-500 font-bold">{errors.deskripsi.message}</p>}
+                                {/* Deskripsi */}
+                                <div className="md:col-span-2 space-y-1.5">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Deskripsi Tambahan</label>
+                                    <textarea
+                                        {...register('deskripsi')}
+                                        rows={3}
+                                        placeholder="Ciri-ciri atau posisi spesifik agar mudah ditemukan teknisi..."
+                                        className="w-full bg-slate-50 border border-slate-200 px-4 py-3 text-sm font-medium text-slate-800 outline-none focus:border-blue-500 transition-colors resize-none"
+                                    />
+                                    {errors.deskripsi && <p className="text-[10px] text-rose-500 font-bold">{errors.deskripsi.message}</p>}
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div className="pt-6">
+                        {/* SUBMIT */}
                         <button
                             type="submit"
                             disabled={submitMutation.isPending}
-                            className="w-full bg-slate-900 hover:bg-blue-600 text-white h-14 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl transition-all active:scale-95 disabled:opacity-70 flex items-center justify-center gap-2"
+                            className="w-full bg-blue-600 hover:bg-blue-500 text-white h-14 font-black text-xs uppercase tracking-[0.2em] transition-colors disabled:opacity-60 flex items-center justify-center gap-3 group"
                         >
                             {submitMutation.isPending ? (
                                 <><Loader2 size={18} className="animate-spin" /> Memproses Laporan...</>
                             ) : (
-                                <><Send size={18} /> Kirim Laporan Resmi</>
+                                <><Send size={16} /> Kirim Laporan Resmi <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" /></>
                             )}
                         </button>
-                        <p className="text-center text-[9px] font-bold text-slate-400 mt-4 flex items-center justify-center gap-1.5">
-                            <Info size={12} /> Dengan melapor, Anda berkontribusi menjaga fasilitas KBB.
+                        <p className="text-center text-[10px] text-slate-400 mt-4 font-medium">
+                            Dengan melapor, Anda membantu menjaga kualitas infrastruktur Kabupaten Bandung Barat.
                         </p>
-                    </div>
-
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     );

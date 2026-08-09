@@ -58,15 +58,14 @@ enum AnnouncementTarget {
 // ==========================================
 // 2. TABEL MASTER & AKTOR
 // ==========================================
-
 model Seksi {
   id          String   @id @default(cuid())
   nama_seksi  String   @unique
   deskripsi   String?
   users       User[]
+  categories  Category[]
   createdAt   DateTime @default(now())
 }
-
 model User {
   id            String   @id @default(cuid())
   nip           String?  @unique
@@ -93,15 +92,15 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
-
 model Category {
   id          String   @id @default(cuid())
   kode        String   @unique 
   nama        String
   is_spatial  Boolean  @default(true) 
+  seksi_id    String?
+  seksi       Seksi?   @relation(fields: [seksi_id], references: [id], onDelete: SetNull)
   assets      Asset[]
 }
-
 // ==========================================
 // 3. CORE ASSET MANAGEMENT
 // ==========================================

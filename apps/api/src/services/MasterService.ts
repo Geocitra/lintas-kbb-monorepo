@@ -4,6 +4,7 @@ import prisma from '../config/database';
 export class MasterService {
     async getCategories() {
         return await prisma.category.findMany({
+            include: { seksi: true },
             orderBy: { nama: 'asc' }
         });
     }
@@ -31,5 +32,29 @@ export class MasterService {
             },
             orderBy: { name: 'asc' }
         });
+    }
+
+    async createCategory(data: { nama: string; kode: string; is_spatial: boolean; seksi_id?: string | null }) {
+        return await prisma.category.create({ data });
+    }
+
+    async updateCategory(id: string, data: { nama?: string; kode?: string; is_spatial?: boolean; seksi_id?: string | null }) {
+        return await prisma.category.update({ where: { id }, data });
+    }
+
+    async deleteCategory(id: string) {
+        return await prisma.category.delete({ where: { id } });
+    }
+
+    async createSeksi(data: { nama_seksi: string; deskripsi?: string }) {
+        return await prisma.seksi.create({ data });
+    }
+
+    async updateSeksi(id: string, data: { nama_seksi?: string; deskripsi?: string }) {
+        return await prisma.seksi.update({ where: { id }, data });
+    }
+
+    async deleteSeksi(id: string) {
+        return await prisma.seksi.delete({ where: { id } });
     }
 }

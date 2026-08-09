@@ -9,7 +9,7 @@ import type { BulkProcurementDTO } from '@dishub/types';
 export const useAssets = (
     page: number = 1,
     limit: number = 10,
-    filters?: { search?: string; status?: string; kategori?: string }
+    filters?: { search?: string; status?: string; kategori?: string; is_spatial?: boolean }
 ) => {
     return useQuery({
         // QueryKey dinamis. Jika page atau filter berubah, TanStack akan otomatis fetch data baru

@@ -38,11 +38,12 @@ export default function PublicLayout() {
                     }`}
             >
                 <div className="max-w-7xl mx-auto px-6 md:px-8 flex items-center justify-between">
-                    {/* Logo Brand */}
                     <Link to="/" className="flex items-center gap-3 group">
-                        <div className="w-10 h-10 bg-blue-900 rounded-xl flex items-center justify-center shadow-inner group-hover:bg-blue-800 transition-colors">
-                            <MapPin className="text-yellow-400" size={20} />
-                        </div>
+                        <img
+                            src="/Logo_Dishub.png"
+                            alt="Logo Dishub KBB"
+                            className="w-9 h-9 object-contain"
+                        />
                         <div className="flex flex-col">
                             <span className="text-xl font-black tracking-tighter leading-none text-slate-900">
                                 LIN<span className="text-blue-600">TAS.</span>
