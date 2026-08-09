@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  lintas-redis:
+    image: redis:alpine
+    container_name: lintas-redis
+    restart: unless-stopped
+
+  lintas-api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: lintas-api
+    restart: unless-stopped
+    volumes:
+      - ./uploads:/app/apps/api/public/uploads
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://deployer_db:Persibnuaing1933!@edaily-db:5432/lintas_kbb?schema=public
+      - REDIS_HOST=lintas-redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=D1shubKBB_S3cur3_T0k3n_G3nerat0r_2026!#@
+      - FRONTEND_URL=https://lintas.geocitra.com
+      - WA_GATEWAY_URL=http://lintas-wa:3001/send-message
+    depends_on:
+      - lintas-redis
+
+  asset-dishub-web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: asset-dishub-web
+    restart: unless-stopped
+
+  lintas-wa:
+    build:
+      context: .
+      dockerfile: apps/wa-gateway/Dockerfile
+    container_name: lintas-wa
+    restart: unless-stopped
+    volumes:
+      - ./baileys_auth_info:/app/apps/wa-gateway/baileys_auth_info
+
+networks:
+  default:
+    name: e-daily-report_default
+    external: true
