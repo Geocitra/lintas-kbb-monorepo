@@ -22,10 +22,10 @@ export class AnnouncementService {
     }
 
     /**
-     * 2. FORCED POP-UP: MENCARI PENGUMUMAN PENTING YANG BELUM DIBACA
-     * Socio-Engineering Guard: Mengunci layar pekerja sebelum mereka klik "Mengerti"
+     * 2. NOTIFIKASI: MENCARI PENGUMUMAN YANG BELUM DIBACA
+     * Digunakan oleh NotificationBell di topbar untuk menampilkan badge count
      */
-    async getUrgentUnreadAnnouncements(userId: string, userRole: string) {
+    async getUnreadAnnouncements(userId: string, userRole: string) {
         // Mapping Role User ke Target Pengumuman
         const allowedTargets = ['SEMUA'];
         if (['TEKNISI', 'KASI', 'ADMIN'].includes(userRole)) {
@@ -34,19 +34,21 @@ export class AnnouncementService {
 
         const unreadAnnouncements = await prisma.announcement.findMany({
             where: {
-                is_important: true,
                 target: { in: allowedTargets as any[] },
                 // Pastikan belum expired (jika ada expires_at)
                 OR: [
                     { expires_at: null },
                     { expires_at: { gt: new Date() } }
                 ],
-                // MAGIC LOGIC: Hanya cari yang "ID User ini TIDAK ADA di tabel Acknowledgment"
+                // Hanya cari yang "ID User ini TIDAK ADA di tabel Acknowledgment"
                 acknowledgments: {
                     none: { user_id: userId }
                 }
             },
-            orderBy: { createdAt: 'desc' }
+            orderBy: { createdAt: 'desc' },
+            include: {
+                author: { select: { name: true, role: true } }
+            }
         });
 
         return unreadAnnouncements;

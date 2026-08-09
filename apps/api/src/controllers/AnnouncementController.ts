@@ -23,17 +23,17 @@ export class AnnouncementController {
         } catch (error) { next(error); }
     }
 
-    // GET /api/v1/announcements/urgent (Semua Role)
+    // GET /api/v1/announcements/urgent (Semua Role — untuk NotificationBell)
     static async getUrgent(req: Request, res: Response, next: NextFunction) {
         try {
             const userId = req.user!.id;
             const userRole = req.user!.role;
 
-            const unread = await announcementService.getUrgentUnreadAnnouncements(userId, userRole);
+            const unread = await announcementService.getUnreadAnnouncements(userId, userRole);
 
             res.status(200).json({
                 success: true,
-                message: 'Pengecekan pengumuman wajib baca selesai',
+                message: 'Daftar notifikasi pengumuman belum dibaca',
                 data: unread
             });
         } catch (error) { next(error); }

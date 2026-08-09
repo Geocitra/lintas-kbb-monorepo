@@ -50,8 +50,7 @@ const AssignmentList = lazy(() => import('@/pages/admin/assignments/AssignmentLi
 const MyTasks    = lazy(() => import('@/pages/technician/MyTasks'));
 const ExecuteTask = lazy(() => import('@/pages/technician/ExecuteTask'));
 
-// Broadcast Management (FASE 6)
-const AnnouncementList = lazy(() => import('@/pages/admin/broadcast/AnnouncementList'));
+// Pengumuman Management (FASE 6)
 const AnnouncementForm = lazy(() => import('@/pages/admin/broadcast/AnnouncementForm'));
 
 // Errors
@@ -147,13 +146,12 @@ export const router = createBrowserRouter([
                             },
 
                             // ------------------------------------------
-                            // KADIS + ADMIN (Broadcast Management)
+                            // KADIS + ADMIN (Pengumuman Management)
                             // ------------------------------------------
                             {
                                 element: <RoleRoute allowedRoles={['KADIS', 'ADMIN']} />,
                                 children: [
-                                    { path: '/broadcast', element: S(AnnouncementList) },
-                                    { path: '/broadcast/create', element: S(AnnouncementForm) },
+                                    { path: '/pengumuman/create', element: S(AnnouncementForm) },
                                 ]
                             },
 

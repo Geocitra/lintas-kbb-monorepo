@@ -24,7 +24,7 @@ export default function AnnouncementForm() {
         try {
             await createMutation.mutateAsync(data);
             toast.success('Pesan berhasil disiarkan ke seluruh jaringan!');
-            navigate('/broadcast');
+            navigate('/pengumuman');
         } catch (error: any) {
             toast.error(error.message || 'Gagal menyiarkan pesan.');
         }
@@ -33,7 +33,7 @@ export default function AnnouncementForm() {
     return (
         <div className="max-w-4xl mx-auto flex flex-col min-h-full animate-in fade-in slide-in-from-bottom-4 pb-12">
             <div className="flex items-center gap-4 mb-8">
-                <Link to="/broadcast" className="w-10 h-10 bg-white border border-slate-200 rounded-full flex items-center justify-center text-slate-500 hover:text-blue-600 shadow-sm transition-colors">
+                <Link to="/pengumuman" className="w-10 h-10 bg-white border border-slate-200 rounded-full flex items-center justify-center text-slate-500 hover:text-blue-600 shadow-sm transition-colors">
                     <ArrowLeft size={18} />
                 </Link>
                 <div>
@@ -94,11 +94,11 @@ export default function AnnouncementForm() {
                             <div className="flex items-center gap-2 mb-1">
                                 <ShieldAlert size={16} className={isImportant ? 'text-rose-600' : 'text-slate-400'} />
                                 <h4 className={`text-sm font-black uppercase tracking-widest ${isImportant ? 'text-rose-700' : 'text-slate-700'}`}>
-                                    Aktifkan Mode Interupsi Layar (Forced Pop-Up)
+                                    Tandai sebagai Pengumuman Penting (Wajib Baca)
                                 </h4>
                             </div>
                             <p className="text-[11px] font-medium text-slate-500 leading-relaxed">
-                                Jika dicentang, layar aplikasi seluruh target audiens akan terkunci seketika oleh pengumuman ini. Mereka tidak bisa bekerja kembali sebelum menekan tombol <strong>"Saya Mengerti"</strong>. Fitur ini dicatat permanen dalam sistem Audit Trail.
+                                Jika dicentang, pengumuman ini akan ditandai sebagai <strong>PENTING</strong> dan muncul dengan highlight merah di feed dan notifikasi semua target audiens.
                             </p>
                         </div>
                     </label>

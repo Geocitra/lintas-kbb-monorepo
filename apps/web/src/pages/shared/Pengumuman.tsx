@@ -1,27 +1,41 @@
 // apps/web/src/pages/shared/Pengumuman.tsx
 // Halaman feed pengumuman untuk SEMUA role yang sudah login
+import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
-import { Bell, Megaphone, ShieldAlert, Clock, Users } from 'lucide-react';
+import { Bell, Megaphone, ShieldAlert, Clock, Users, Plus } from 'lucide-react';
 import { useAnnouncements } from '@/hooks/useAnnouncementQueries';
+import { useAuthStore } from '@/store/useAuthStore';
 
 export default function Pengumuman() {
     const { data: resData, isLoading } = useAnnouncements();
     const announcements = (resData as any)?.data || [];
+    const { user } = useAuthStore();
+    const canCreate = user?.role === 'KADIS' || user?.role === 'ADMIN';
 
     return (
         <div className="flex flex-col min-h-full w-full animate-in fade-in duration-300">
             {/* Header */}
-            <div className="mb-8">
-                <div className="flex items-center gap-3 mb-1">
-                    <Bell size={22} className="text-blue-600" />
-                    <h1 className="text-2xl font-black text-slate-800 tracking-tight uppercase">
-                        Pengumuman
-                    </h1>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                <div>
+                    <div className="flex items-center gap-3 mb-1">
+                        <Bell size={22} className="text-blue-600" />
+                        <h1 className="text-2xl font-black text-slate-800 tracking-tight uppercase">
+                            Pengumuman
+                        </h1>
+                    </div>
+                    <p className="text-slate-500 text-xs font-medium mt-1">
+                        Informasi resmi dari pimpinan dan manajemen Dinas Perhubungan KBB.
+                    </p>
                 </div>
-                <p className="text-slate-500 text-xs font-medium mt-1">
-                    Informasi resmi dari pimpinan dan manajemen Dinas Perhubungan KBB.
-                </p>
+                {canCreate && (
+                    <Link
+                        to="/pengumuman/create"
+                        className="px-5 py-3 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 shrink-0"
+                    >
+                        <Plus size={16} strokeWidth={3} /> Buat Pengumuman Baru
+                    </Link>
+                )}
             </div>
 
             {/* Loading */}

@@ -4,11 +4,11 @@ import { AlertOctagon, CheckCircle2, Megaphone, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 
-import { useUrgentAnnouncements, useAcknowledgeAnnouncement } from '@/hooks/useAnnouncementQueries';
+import { useUnreadAnnouncements, useAcknowledgeAnnouncement } from '@/hooks/useAnnouncementQueries';
 
 export default function BroadcastModal() {
     // 1. Tarik pengumuman darurat (Akan otomatis mem-polling setiap 60 detik di background)
-    const { data: urgentAnnouncements = [] } = useUrgentAnnouncements();
+    const { data: urgentAnnouncements = [] } = useUnreadAnnouncements();
     const ackMutation = useAcknowledgeAnnouncement();
 
     // State untuk menampung pengumuman yang sedang ditampilkan (Satu per satu jika ada banyak)

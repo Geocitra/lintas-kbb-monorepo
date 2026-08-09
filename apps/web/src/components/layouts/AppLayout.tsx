@@ -4,12 +4,12 @@ import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '@/store/useAuthStore';
 import {
     LayoutDashboard, Map, FileText, ClipboardList,
-    ShieldCheck, LogOut, Menu, X, Megaphone,
+    ShieldCheck, LogOut, Menu, X,
     CheckSquare, Users, BarChart2, Hammer, Bell,
     Database, ArrowRightLeft
 } from 'lucide-react';
 import type { Role } from '@dishub/types';
-import BroadcastModal from '@/components/ui/BroadcastModal';
+import NotificationBell from '@/components/ui/NotificationBell';
 
 interface NavItem {
     name: string;
@@ -34,14 +34,14 @@ export default function AppLayout() {
         // === KEPALA DINAS (Executive) ===
         { name: 'Ruang Komando', path: '/dashboard', icon: <BarChart2 size={18} />, allowedRoles: ['KADIS'] },
         { name: 'Peta Wilayah', path: '/gis', icon: <Map size={18} />, allowedRoles: ['KADIS'] },
-        { name: 'Broadcast', path: '/broadcast', icon: <Megaphone size={18} />, allowedRoles: ['KADIS'] },
+        { name: 'Pengumuman', path: '/pengumuman', icon: <Bell size={18} />, allowedRoles: ['KADIS'] },
 
         // === ADMIN SISTEM ===
         { name: 'Dashboard', path: '/admin-dashboard', icon: <LayoutDashboard size={18} />, allowedRoles: ['ADMIN'] },
         { name: 'Peta Spasial', path: '/gis', icon: <Map size={18} />, allowedRoles: ['ADMIN'] },
         { name: 'Inventaris Aset', path: '/assets', icon: <FileText size={18} />, allowedRoles: ['ADMIN'] },
         { name: 'Peminjaman Aset', path: '/admin/assignments', icon: <ArrowRightLeft size={18} />, allowedRoles: ['ADMIN'] },
-        { name: 'Broadcast', path: '/broadcast', icon: <Megaphone size={18} />, allowedRoles: ['ADMIN'] },
+        { name: 'Pengumuman', path: '/pengumuman', icon: <Bell size={18} />, allowedRoles: ['ADMIN'] },
         { name: 'Manajemen User', path: '/admin/users', icon: <Users size={18} />, allowedRoles: ['ADMIN'] },
         { name: 'Data Master', path: '/admin/master', icon: <Database size={18} />, allowedRoles: ['ADMIN'] },
         { name: 'Audit Trail', path: '/audit', icon: <ShieldCheck size={18} />, allowedRoles: ['ADMIN'] },
@@ -52,12 +52,12 @@ export default function AppLayout() {
         { name: 'Tiket Perbaikan', path: '/tickets', icon: <CheckSquare size={18} />, allowedRoles: ['KASI'] },
         // { name: 'Tugas Saya',      path: '/my-tasks',     icon: <Hammer size={18} />,        allowedRoles: ['KASI'] },
         // { name: 'Sensus Lapangan', path: '/field-census', icon: <Map size={18} />,           allowedRoles: ['KASI'] },
-        { name: 'Broadcast', path: '/pengumuman', icon: <Bell size={18} />, allowedRoles: ['KASI'] },
+        { name: 'Pengumuman', path: '/pengumuman', icon: <Bell size={18} />, allowedRoles: ['KASI'] },
 
         // === TEKNISI (Petugas Lapangan) ===
         { name: 'Tugas Saya', path: '/my-tasks', icon: <Hammer size={18} />, allowedRoles: ['TEKNISI'] },
         { name: 'Sensus Lapangan', path: '/field-census', icon: <Map size={18} />, allowedRoles: ['TEKNISI'] },
-        { name: 'Broadcast', path: '/pengumuman', icon: <Bell size={18} />, allowedRoles: ['TEKNISI'] },
+        { name: 'Pengumuman', path: '/pengumuman', icon: <Bell size={18} />, allowedRoles: ['TEKNISI'] },
     ];
 
     const filteredNavItems = navItems.filter(item =>
@@ -66,7 +66,7 @@ export default function AppLayout() {
 
     return (
         <div className="flex h-screen w-screen overflow-hidden bg-slate-950 font-sans text-slate-800">
-            <BroadcastModal />
+
 
             {/* === SIDEBAR === */}
             <aside
@@ -163,6 +163,7 @@ export default function AppLayout() {
                     </div>
 
                     <div className="flex items-center gap-3">
+                        <NotificationBell />
                         <div className="px-3 py-1.5 bg-emerald-50 border border-emerald-200 flex items-center gap-2">
                             <span className="w-2 h-2 bg-emerald-500 animate-pulse" />
                             <span className="text-[10px] font-bold text-emerald-700 tracking-widest uppercase">Online</span>

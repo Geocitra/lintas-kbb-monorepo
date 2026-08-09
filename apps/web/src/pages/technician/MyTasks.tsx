@@ -1,4 +1,4 @@
-// apps/web/src/pages/technician/MyTasks.tsx
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format, isPast, parseISO } from 'date-fns';
 import { id } from 'date-fns/locale';
@@ -9,6 +9,7 @@ import { useMyTasks } from '@/hooks/useTicketQueries';
 export default function MyTasks() {
     const navigate = useNavigate();
     const { data: tasks = [], isLoading } = useMyTasks();
+    const [activeTab, setActiveTab] = useState<'todo' | 'review' | 'completed'>('todo');
 
     if (isLoading) {
         return (
@@ -18,8 +19,13 @@ export default function MyTasks() {
         );
     }
 
-    // Filter tugas yang masih aktif (Belum SELESAI)
-    const activeTasks = tasks.filter((t: any) => t.status !== 'SELESAI');
+    // Klasifikasi Tugas Berdasarkan Alur Operasional
+    const todoTasks = tasks.filter((t: any) => !['REVIEW_ADMIN', 'SELESAI'].includes(t.status));
+    const reviewTasks = tasks.filter((t: any) => t.status === 'REVIEW_ADMIN');
+    const completedTasks = tasks.filter((t: any) => t.status === 'SELESAI');
+
+    // Ambil list sesuai tab aktif
+    const displayTasks = activeTab === 'todo' ? todoTasks : activeTab === 'review' ? reviewTasks : completedTasks;
 
     return (
         <div className="max-w-3xl mx-auto flex flex-col min-h-full animate-in fade-in slide-in-from-bottom-4 pb-12">
@@ -30,19 +36,55 @@ export default function MyTasks() {
                 </p>
             </div>
 
+            {/* TAB SELECTOR */}
+            <div className="grid grid-cols-3 bg-slate-100 p-1.5 rounded-2xl mb-8 border border-slate-200 gap-1">
+                <button
+                    onClick={() => setActiveTab('todo')}
+                    className={`py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                        activeTab === 'todo'
+                            ? 'bg-white text-slate-800 shadow-md scale-[1.02]'
+                            : 'text-slate-400 hover:text-slate-700 hover:bg-slate-50/50'
+                    }`}
+                >
+                    Perlu Dikerjakan ({todoTasks.length})
+                </button>
+                <button
+                    onClick={() => setActiveTab('review')}
+                    className={`py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                        activeTab === 'review'
+                            ? 'bg-white text-slate-800 shadow-md scale-[1.02]'
+                            : 'text-slate-400 hover:text-slate-700 hover:bg-slate-50/50'
+                    }`}
+                >
+                    Menunggu Verifikasi ({reviewTasks.length})
+                </button>
+                <button
+                    onClick={() => setActiveTab('completed')}
+                    className={`py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                        activeTab === 'completed'
+                            ? 'bg-white text-slate-800 shadow-md scale-[1.02]'
+                            : 'text-slate-400 hover:text-slate-700 hover:bg-slate-50/50'
+                    }`}
+                >
+                    Riwayat Selesai ({completedTasks.length})
+                </button>
+            </div>
+
+            {/* LIST KARTU TUGAS */}
             <div className="flex flex-col gap-6">
-                {activeTasks.length > 0 ? (
-                    activeTasks.map((task: any) => {
+                {displayTasks.length > 0 ? (
+                    displayTasks.map((task: any) => {
                         const deadlineDate = task.deadline_at ? parseISO(task.deadline_at) : null;
-                        const isBreached = deadlineDate && isPast(deadlineDate) && !['REVIEW_ADMIN'].includes(task.status);
+                        const isBreached = deadlineDate && isPast(deadlineDate) && !['REVIEW_ADMIN', 'SELESAI'].includes(task.status);
 
                         return (
-                            <div key={task.id} className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col transition-transform hover:-translate-y-1">
+                            <div key={task.id} className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col transition-transform hover:-translate-y-0.5">
 
                                 {/* Header Kartu */}
                                 <div className={`p-4 flex items-center justify-between border-b border-slate-100 ${isBreached ? 'bg-rose-50' : 'bg-slate-50'}`}>
                                     <div className="flex items-center gap-2">
-                                        <span className={`px-2.5 py-1 text-[9px] font-black uppercase tracking-widest text-white rounded-md shadow-sm ${task.priority === 'URGENT' ? 'bg-rose-600 animate-pulse' :
+                                        <span className={`px-2.5 py-1 text-[9px] font-black uppercase tracking-widest text-white rounded-md shadow-sm ${
+                                                task.priority === 'URGENT' ? 'bg-rose-600 animate-pulse' :
                                                 task.priority === 'TINGGI' ? 'bg-amber-500' : 'bg-blue-500'
                                             }`}>
                                             {task.priority || 'NORMAL'}
@@ -81,15 +123,23 @@ export default function MyTasks() {
                                         </p>
                                     </div>
 
-                                    {/* Tombol Eksekusi Mobile-Friendly */}
-                                    {task.status === 'REVIEW_ADMIN' ? (
-                                        <div className="w-full text-blue-600 py-3 text-center flex items-center justify-center gap-2 font-bold uppercase tracking-widest text-[10px]">
-                                            <CheckCircle2 size={16} />
-                                            <span>Menunggu Validasi Pusat</span>
+                                    {/* Aksi berdasarkan status */}
+                                    {task.status === 'REVIEW_ADMIN' && (
+                                        <div className="w-full text-blue-600 py-3 text-center flex items-center justify-center gap-2 font-bold uppercase tracking-widest text-[10px] bg-blue-50/50 rounded-xl">
+                                            <Clock size={16} />
+                                            <span>Pekerjaan Selesai — Menunggu Validasi KASI</span>
                                         </div>
-                                    ) : (
+                                    )}
+
+                                    {task.status === 'SELESAI' && (
+                                        <div className="w-full text-emerald-600 py-3 text-center flex items-center justify-center gap-2 font-bold uppercase tracking-widest text-[10px] bg-emerald-50/50 rounded-xl">
+                                            <CheckCircle2 size={16} />
+                                            <span>Tugas Telah Diverifikasi & Ditutup</span>
+                                        </div>
+                                    )}
+
+                                    {!['REVIEW_ADMIN', 'SELESAI'].includes(task.status) && (
                                         <button
-                                            // Kirim data task ke halaman eksekusi agar tidak perlu fetch ulang
                                             onClick={() => navigate(`/my-tasks/${task.id}/execute`, { state: { task } })}
                                             className="w-full bg-slate-900 hover:bg-blue-600 text-white py-4 rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
                                         >
@@ -106,8 +156,20 @@ export default function MyTasks() {
                         <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
                             <FolderGit size={32} className="text-slate-300" />
                         </div>
-                        <h3 className="text-sm font-black text-slate-700 uppercase tracking-widest">Tidak Ada Tugas Aktif</h3>
-                        <p className="text-xs font-medium text-slate-500 mt-2">Anda telah menyelesaikan semua pekerjaan Anda. Selamat beristirahat!</p>
+                        <h3 className="text-sm font-black text-slate-700 uppercase tracking-widest">
+                            {activeTab === 'todo'
+                                ? 'Tidak Ada Tugas Aktif'
+                                : activeTab === 'review'
+                                ? 'Tidak Ada Verifikasi Pending'
+                                : 'Belum Ada Riwayat Tugas'}
+                        </h3>
+                        <p className="text-xs font-medium text-slate-500 mt-2">
+                            {activeTab === 'todo'
+                                ? 'Anda telah menyelesaikan semua pekerjaan Anda. Selamat beristirahat!'
+                                : activeTab === 'review'
+                                ? 'Semua laporan perbaikan Anda telah diverifikasi oleh KASI.'
+                                : 'Anda belum menyelesaikan tugas perbaikan bulan ini.'}
+                        </p>
                     </div>
                 )}
             </div>

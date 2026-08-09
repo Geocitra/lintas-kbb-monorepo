@@ -1,6 +1,6 @@
 // apps/web/src/pages/kadis/KadisDashboard.tsx
 // Dashboard Eksekutif — Ruang Komando Kepala Dinas
-import { BarChart2, TrendingUp, AlertTriangle, CheckCircle, Clock, FileText, Users, Map } from 'lucide-react';
+import { BarChart2, TrendingUp, AlertTriangle, CheckCircle, Clock, FileText, Map } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useDashboardStats } from '@/hooks/useDashboardQueries';
 
@@ -111,22 +111,13 @@ export default function KadisDashboard() {
                             <p className="text-slate-400 text-xs mt-0.5">Pantau kondisi infrastruktur real-time</p>
                         </div>
                     </Link>
-                    <Link to="/broadcast/create" className="flex items-center gap-4 p-5 bg-white border border-slate-200 hover:border-blue-300 hover:shadow-md transition-all group">
+                    <Link to="/pengumuman/create" className="flex items-center gap-4 p-5 bg-white border border-slate-200 hover:border-blue-300 hover:shadow-md transition-all group">
                         <div className="p-3 bg-amber-50 group-hover:bg-amber-100 transition-colors">
                             <TrendingUp size={20} className="text-amber-600" />
                         </div>
                         <div>
-                            <p className="font-black text-sm text-slate-800 uppercase tracking-tight">Kirim Broadcast</p>
-                            <p className="text-slate-400 text-xs mt-0.5">Pengumuman ke seluruh staf</p>
-                        </div>
-                    </Link>
-                    <Link to="/pengumuman" className="flex items-center gap-4 p-5 bg-white border border-slate-200 hover:border-blue-300 hover:shadow-md transition-all group">
-                        <div className="p-3 bg-emerald-50 group-hover:bg-emerald-100 transition-colors">
-                            <Users size={20} className="text-emerald-600" />
-                        </div>
-                        <div>
-                            <p className="font-black text-sm text-slate-800 uppercase tracking-tight">Lihat Pengumuman</p>
-                            <p className="text-slate-400 text-xs mt-0.5">Feed pengumuman aktif</p>
+                            <p className="font-black text-sm text-slate-800 uppercase tracking-tight">Buat Pengumuman</p>
+                            <p className="text-slate-400 text-xs mt-0.5">Siarkan informasi ke seluruh staf</p>
                         </div>
                     </Link>
                 </div>
@@ -140,7 +131,7 @@ export default function KadisDashboard() {
                 <p className="text-blue-200 text-sm leading-relaxed">
                     Sebagai <strong className="text-white">Kepala Dinas</strong>, Anda memiliki akses monitoring dan komando strategis.
                     Manajemen operasional teknis (aset, audit, user) dikelola oleh tim <strong className="text-white">Admin Sistem</strong>.
-                    Gunakan Peta Spasial untuk pantauan lapangan dan Broadcast untuk komunikasi ke seluruh staf.
+                    Gunakan Peta Spasial untuk pantauan lapangan dan Pengumuman untuk komunikasi ke seluruh staf.
                 </p>
             </div>
         </div>

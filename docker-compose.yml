@@ -33,14 +33,15 @@ services:
     container_name: asset-dishub-web
     restart: unless-stopped
 
-  lintas-wa:
-    build:
-      context: .
-      dockerfile: apps/wa-gateway/Dockerfile
-    container_name: lintas-wa
-    restart: unless-stopped
-    volumes:
-      - ./baileys_auth_info:/app/apps/wa-gateway/baileys_auth_info
+  # WA Gateway dimatikan sementara (belum production-ready)
+  # lintas-wa:
+  #   build:
+  #     context: .
+  #     dockerfile: apps/wa-gateway/Dockerfile
+  #   container_name: lintas-wa
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./baileys_auth_info:/app/apps/wa-gateway/baileys_auth_info
 
 networks:
   default:

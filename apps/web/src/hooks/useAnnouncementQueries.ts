@@ -18,20 +18,19 @@ export const useAnnouncements = (page: number = 1, limit: number = 10) => {
 };
 
 // ==========================================
-// 2. QUERY: RADAR PENGUMUMAN DARURAT (FORCED POP-UP)
+// 2. QUERY: NOTIFIKASI PENGUMUMAN BELUM DIBACA (BELL ICON)
 // ==========================================
-export const useUrgentAnnouncements = (isEnabled: boolean = true) => {
+export const useUnreadAnnouncements = (isEnabled: boolean = true) => {
     return useQuery({
         queryKey: ['urgent_announcements'],
         queryFn: async () => {
             const res: any = await api.get('/announcements/urgent');
             return res.data; // Mengembalikan array pengumuman yang belum dibaca
         },
-        enabled: isEnabled, // Aktif jika user sudah login
-        // BACKGROUND POLLING: React akan menembak API ini secara diam-diam setiap 60 detik.
-        // Jika Kadis menyebar pengumuman baru, dalam 1 menit layar teknisi langsung terkunci!
-        refetchInterval: 60 * 1000,
-        refetchOnWindowFocus: true, // Langsung cek jika user kembali ke tab web kita
+        enabled: isEnabled,
+        // BACKGROUND POLLING: React akan menembak API ini setiap 2 menit di background
+        refetchInterval: 120 * 1000,
+        refetchOnWindowFocus: true,
     });
 };
 

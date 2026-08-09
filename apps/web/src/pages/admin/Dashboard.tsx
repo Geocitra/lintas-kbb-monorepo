@@ -60,7 +60,7 @@ export default function Dashboard() {
         );
     }
 
-    const stats = statsData?.data;
+    const stats = statsData;
 
     // Konfigurasi Chart Kondisi Aset (Doughnut)
     const conditionLabels = stats?.charts?.kondisi?.map((item: any) => item.label.replace('_', ' ')) || [];
