@@ -16,7 +16,7 @@ const getImageUrl = (path?: string) => {
 // ==========================================
 export function DetailAssetPanel({ data }: { data: any }) {
     const { user } = useAuthStore();
-    const canManageTickets = !!(user?.role && ['KASI', 'ADMIN'].includes(user.role));
+    const canManageTickets = !!(user?.role && ['KASI'].includes(user.role));
 
     if (!data) return null;
 
@@ -97,7 +97,7 @@ export function DetailAssetPanel({ data }: { data: any }) {
 // ==========================================
 export function DetailReportPanel({ data }: { data: any }) {
     const { user } = useAuthStore();
-    const canVerify = !!(user?.role && ['KASI', 'ADMIN'].includes(user.role));
+    const canVerify = !!(user?.role && ['KASI'].includes(user.role));
 
     if (!data) return null;
 

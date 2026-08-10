@@ -32,7 +32,7 @@ export default function LintasMap() {
 
     // 3. Batas Wilayah Administrasi Desa (Menggunakan GeoJSON Lokal)
     const isBoundariesActive = activeLayers.includes('boundaries');
-    const geoJsonData = bogorKecamatan;
+    const geoJsonData = bogorKecamatan as any;
     const isGeoLoading = false;
 
     // 4. Pilih URL Peta Dasar (Base Map)
@@ -104,7 +104,7 @@ export default function LintasMap() {
                 )}
                 {/* Lapisan Titik Aset & Laporan */}
                 {activeLayers.includes('assets') && <AssetMarkers />}
-                {activeLayers.includes('reports') && user?.role && ['ADMIN', 'KADIS', 'KASI'].includes(user.role) && <ReportMarkers />}
+                {activeLayers.includes('reports') && user?.role && ['KADIS', 'KASI'].includes(user.role) && <ReportMarkers />}
 
             </MapContainer>
         </div>

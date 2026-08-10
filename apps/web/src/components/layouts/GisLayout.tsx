@@ -13,7 +13,7 @@ export default function GisLayout() {
     // Navigasi Sidebar Peta
     const sidebarNav = [
         { type: 'katalog-aset' as PanelType, icon: <FolderGit size={20} />, label: 'Katalog Aset' },
-        ...((user?.role && ['ADMIN', 'KADIS', 'KASI'].includes(user.role)) ? [
+        ...((user?.role && ['KADIS', 'KASI'].includes(user.role)) ? [
             { type: 'katalog-laporan' as PanelType, icon: <AlertTriangle size={20} />, label: 'Aduan Masuk' }
         ] : []),
         { type: 'konfigurasi' as PanelType, icon: <Settings size={20} />, label: 'Konfigurasi' },

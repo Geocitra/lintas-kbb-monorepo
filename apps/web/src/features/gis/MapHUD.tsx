@@ -77,7 +77,7 @@ export function SpatialLegend() {
     const activeLayers = useGisUIStore((state) => state.activeLayers);
 
     const hasAssetsActive = activeLayers.includes('assets');
-    const canSeeReports = !!(user?.role && ['ADMIN', 'KADIS', 'KASI'].includes(user.role));
+    const canSeeReports = !!(user?.role && ['KADIS', 'KASI'].includes(user.role));
     const hasReportsActive = activeLayers.includes('reports') && canSeeReports;
 
     // Menyembunyikan legenda jika layer tidak aktif
