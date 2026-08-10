@@ -34,6 +34,8 @@ dist-ssr/
 # Uploaded assets / dynamic storage
 apps/api/public/uploads/*
 !apps/api/public/uploads/.gitkeep
+!apps/api/public/uploads/assets/
+!apps/api/public/uploads/assets/*
 
 # IDEs and editors configurations
 .idea/
