@@ -72,6 +72,7 @@ app.use('/api/v1/audit', auditRoutes);
 app.use('/api/v1/announcements', announcementRoutes); 
 app.use('/api/v1/dashboard', dashboardRoutes);
 app.use('/api/v1', masterRoutes);
+app.use('/api/v1/master', masterRoutes);
 
 // ==========================================
 // GLOBAL ERROR HANDLER (Harus berada di paling bawah)
