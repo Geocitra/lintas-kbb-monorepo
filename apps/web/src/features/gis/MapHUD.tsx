@@ -1,6 +1,7 @@
 // apps/web/src/features/gis/MapHUD.tsx
 import { Plus, Minus, Maximize2, Compass, Layers } from 'lucide-react';
 import { useGisUIStore } from '@/store/useGisUIStore';
+import { useAuthStore } from '@/store/useAuthStore';
 
 // ==========================================
 // 1. KOMPONEN: PELACAK KORDINAT (GPS TRACKER)
@@ -72,10 +73,12 @@ export function ZoomControls() {
 // 3. KOMPONEN: LEGENDA SPASIAL (DYNAMIC LEGEND)
 // ==========================================
 export function SpatialLegend() {
+    const { user } = useAuthStore();
     const activeLayers = useGisUIStore((state) => state.activeLayers);
 
     const hasAssetsActive = activeLayers.includes('assets');
-    const hasReportsActive = activeLayers.includes('reports');
+    const canSeeReports = !!(user?.role && ['ADMIN', 'KADIS', 'KASI'].includes(user.role));
+    const hasReportsActive = activeLayers.includes('reports') && canSeeReports;
 
     // Menyembunyikan legenda jika layer tidak aktif
     if (!hasAssetsActive && !hasReportsActive) return null;

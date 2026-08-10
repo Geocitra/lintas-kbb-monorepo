@@ -2,6 +2,7 @@
 import { Copy, ShieldAlert, Wrench, Eye, ExternalLink, MapPin, Activity } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
+import { useAuthStore } from '@/store/useAuthStore';
 
 // Utility untuk format URL Gambar dari backend
 const getImageUrl = (path?: string) => {
@@ -14,6 +15,9 @@ const getImageUrl = (path?: string) => {
 // 1. KOMPONEN: DETAIL ASET
 // ==========================================
 export function DetailAssetPanel({ data }: { data: any }) {
+    const { user } = useAuthStore();
+    const canManageTickets = !!(user?.role && ['KASI', 'ADMIN'].includes(user.role));
+
     if (!data) return null;
 
     const handleCopy = () => {
@@ -46,9 +50,11 @@ export function DetailAssetPanel({ data }: { data: any }) {
                             <p className="text-[10px] font-medium text-rose-700 leading-relaxed">
                                 Aset ini mengalami kerusakan. Segera buat Surat Perintah Kerja (SLA).
                             </p>
-                            <Link to={`/admin/tickets/create?asset_id=${data.id}`} className="inline-flex items-center gap-1.5 mt-1 bg-rose-600 hover:bg-rose-700 text-white font-black text-[9px] tracking-widest uppercase px-3 py-2 rounded-lg transition-colors shadow-sm">
-                                <Wrench size={12} /> Buat Tiket SLA
-                            </Link>
+                            {canManageTickets && (
+                                <Link to="/reports" className="inline-flex items-center gap-1.5 mt-1 bg-rose-600 hover:bg-rose-700 text-white font-black text-[9px] tracking-widest uppercase px-3 py-2 rounded-lg transition-colors shadow-sm">
+                                    <Wrench size={12} /> Kelola Laporan & Tiket
+                                </Link>
+                            )}
                         </div>
                     </div>
                 )}
@@ -92,6 +98,9 @@ export function DetailAssetPanel({ data }: { data: any }) {
 // 2. KOMPONEN: DETAIL LAPORAN / TIKET
 // ==========================================
 export function DetailReportPanel({ data }: { data: any }) {
+    const { user } = useAuthStore();
+    const canVerify = !!(user?.role && ['KASI', 'ADMIN'].includes(user.role));
+
     if (!data) return null;
 
     return (
@@ -139,14 +148,16 @@ export function DetailReportPanel({ data }: { data: any }) {
             </div>
 
             {/* Action Bawah */}
-            <div className="p-5 border-t border-slate-100 bg-white shrink-0">
-                <Link
-                    to={`/admin/reports/${data.id}`}
-                    className="w-full flex items-center justify-center gap-2 bg-slate-900 hover:bg-blue-600 text-white py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg active:scale-95"
-                >
-                    <Eye size={14} /> Buka Halaman Verifikasi <ExternalLink size={14} />
-                </Link>
-            </div>
+            {canVerify && (
+                <div className="p-5 border-t border-slate-100 bg-white shrink-0">
+                    <Link
+                        to="/reports"
+                        className="w-full flex items-center justify-center gap-2 bg-slate-900 hover:bg-blue-600 text-white py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg active:scale-95"
+                    >
+                        <Eye size={14} /> Buka Halaman Verifikasi <ExternalLink size={14} />
+                    </Link>
+                </div>
+            )}
         </div>
     );
 }

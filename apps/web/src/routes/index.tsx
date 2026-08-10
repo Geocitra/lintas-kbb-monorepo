@@ -184,9 +184,14 @@ export const router = createBrowserRouter([
                         element: <GisLayout />,
                         children: [
                             {
-                                element: <RoleRoute allowedRoles={['KADIS', 'ADMIN', 'KASI', 'TEKNISI']} />,
+                                element: <RoleRoute allowedRoles={['KADIS', 'ADMIN', 'KASI']} />,
                                 children: [
-                                    { path: '/gis', element: S(GisCommandCenter) },
+                                    { path: '/gis', element: S(GisCommandCenter) }
+                                ]
+                            },
+                            {
+                                element: <RoleRoute allowedRoles={['TEKNISI']} />,
+                                children: [
                                     { path: '/field-census', element: S(GisCommandCenter) }
                                 ]
                             }
