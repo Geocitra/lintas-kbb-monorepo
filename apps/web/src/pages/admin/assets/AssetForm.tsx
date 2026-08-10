@@ -62,7 +62,7 @@ export default function AssetForm() {
                 setPreviewUrl(
                     assetData.foto_utama.startsWith('http')
                         ? assetData.foto_utama
-                        : `http://localhost:3000${assetData.foto_utama}`
+                        : `${import.meta.env.PROD ? window.location.origin : 'http://localhost:3000'}${assetData.foto_utama}`
                 );
             }
         }

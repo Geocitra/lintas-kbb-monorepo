@@ -192,7 +192,7 @@ export default function Track() {
                                                 {/* Menampilkan foto hasil jika ada */}
                                                 {reportData.progress?.foto_hasil && (
                                                     <img
-                                                        src={`http://localhost:3000${reportData.progress.foto_hasil}`}
+                                                        src={`${import.meta.env.PROD ? window.location.origin : 'http://localhost:3000'}${reportData.progress.foto_hasil}`}
                                                         alt="Bukti Selesai"
                                                         className="mt-4 rounded-xl w-full max-h-48 object-cover border border-slate-200 shadow-sm"
                                                     />

@@ -11,7 +11,9 @@ import { useReviewTicket } from '@/hooks/useTicketQueries';
 // Helper Utility untuk Foto Path
 const getImageUrl = (path?: string) => {
     if (!path) return 'https://placehold.co/600x400/f8fafc/94a3b8?text=TIDAK+ADA+FOTO';
-    return path.startsWith('http') ? path : `http://localhost:3000${path}`;
+    if (path.startsWith('http')) return path;
+    const origin = import.meta.env.PROD ? window.location.origin : 'http://localhost:3000';
+    return `${origin}${path}`;
 };
 
 export default function TicketReview() {
