@@ -5,11 +5,12 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 import { useGisUIStore } from '@/store/useGisUIStore';
-import { useBoundaries } from '@/hooks/useGisQueries';
 import { useAuthStore } from '@/store/useAuthStore';
 import MapControllers from './MapControllers';
 import AssetMarkers from './AssetMarkers';
 import ReportMarkers from './ReportMarkers';
+import bogorKecamatan from '@/assets/geojson/bogor-kecamatan.json';
+
 // Fix untuk Leaflet Default Icon issue di Vite
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -29,15 +30,10 @@ export default function LintasMap() {
     const initialCenter = useMemo(() => useGisUIStore.getState().mapCenter, []);
     const initialZoom = useMemo(() => useGisUIStore.getState().mapZoom, []);
 
-    // 3. Panggil API GeoJSON dengan TanStack Query (Akan menembak endpoint /spatial/boundaries?zoom=X)
-    // Hanya dipanggil jika layer "boundaries" aktif.
+    // 3. Batas Wilayah Administrasi Desa (Menggunakan GeoJSON Lokal)
     const isBoundariesActive = activeLayers.includes('boundaries');
-    const currentZoom = useGisUIStore((state) => state.mapZoom); // Butuh zoom untuk downsampling
-
-    const {
-        data: geoJsonData,
-        isLoading: isGeoLoading
-    } = useBoundaries(currentZoom, isBoundariesActive);
+    const geoJsonData = bogorKecamatan;
+    const isGeoLoading = false;
 
     // 4. Pilih URL Peta Dasar (Base Map)
     const tileUrl = useMemo(() => {
@@ -96,12 +92,12 @@ export default function LintasMap() {
                     attribution='&copy; OpenStreetMap contributors &copy; CARTO'
                 />
 
-                {/* Lapisan Poligon Batas KBB (Dirender jika data sudah tiba) */}
+                {/* Lapisan Poligon Batas Wilayah (Dirender jika data sudah tiba) */}
                 {geoJsonData && geoJsonData.features && isBoundariesActive && (
                     <GeoJSON
-                        // Key ini penting agar Leaflet me-render ulang poligon jika level zoom berubah drastis (Downsampling update)
-                        key={`boundaries-layer-${currentZoom < 12 ? 'low' : 'high'}-${activeBaseMap}`}
-                        data={geoJsonData}
+                        // Key menyertakan mapOpacity agar perubahan slider opasitas bisa langsung di-render ulang secara reaktif oleh Leaflet
+                        key={`boundaries-layer-${activeBaseMap}-${mapOpacity}-${isBoundariesActive}`}
+                        data={geoJsonData as any}
                         style={geoJsonStyle}
                         interactive={false} // Matikan klik pada poligon agar tidak mengganggu klik marker
                     />

@@ -42,7 +42,7 @@ export function DetailAssetPanel({ data }: { data: any }) {
                 </div>
 
                 {/* Warning Alert */}
-                {isKritis && (
+                {isKritis && canManageTickets && (
                     <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl flex items-start gap-3">
                         <ShieldAlert className="text-rose-600 shrink-0 mt-0.5 animate-pulse" size={16} />
                         <div className="space-y-1.5">
@@ -50,11 +50,9 @@ export function DetailAssetPanel({ data }: { data: any }) {
                             <p className="text-[10px] font-medium text-rose-700 leading-relaxed">
                                 Aset ini mengalami kerusakan. Segera buat Surat Perintah Kerja (SLA).
                             </p>
-                            {canManageTickets && (
-                                <Link to="/reports" className="inline-flex items-center gap-1.5 mt-1 bg-rose-600 hover:bg-rose-700 text-white font-black text-[9px] tracking-widest uppercase px-3 py-2 rounded-lg transition-colors shadow-sm">
-                                    <Wrench size={12} /> Kelola Laporan & Tiket
-                                </Link>
-                            )}
+                            <Link to="/reports" className="inline-flex items-center gap-1.5 mt-1 bg-rose-600 hover:bg-rose-700 text-white font-black text-[9px] tracking-widest uppercase px-3 py-2 rounded-lg transition-colors shadow-sm">
+                                <Wrench size={12} /> Kelola Laporan & Tiket
+                            </Link>
                         </div>
                     </div>
                 )}
