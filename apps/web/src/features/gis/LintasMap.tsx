@@ -9,7 +9,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 import MapControllers from './MapControllers';
 import AssetMarkers from './AssetMarkers';
 import ReportMarkers from './ReportMarkers';
-import bogorKecamatan from '@/assets/geojson/bogor-kecamatan.json';
+import administrasiLn from '@/assets/geojson/ADMINISTRASI_LN_25K.json';
 
 // Fix untuk Leaflet Default Icon issue di Vite
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -32,7 +32,7 @@ export default function LintasMap() {
 
     // 3. Batas Wilayah Administrasi Desa (Menggunakan GeoJSON Lokal)
     const isBoundariesActive = activeLayers.includes('boundaries');
-    const geoJsonData = bogorKecamatan as any;
+    const geoJsonData = administrasiLn as any;
     const isGeoLoading = false;
 
     // 4. Pilih URL Peta Dasar (Base Map)
@@ -68,7 +68,7 @@ export default function LintasMap() {
                     <div className="bg-white p-6 rounded-2xl shadow-2xl text-center space-y-4 flex flex-col items-center">
                         <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
                         <p className="text-[10px] text-slate-800 font-black uppercase tracking-[0.2em] animate-pulse">
-                            Memuat Peta Tata Ruang KBB...
+                            Memuat Peta Tata Ruang...
                         </p>
                     </div>
                 </div>

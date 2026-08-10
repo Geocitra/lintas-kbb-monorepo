@@ -41,7 +41,7 @@ export default function PublicLayout() {
                     <Link to="/" className="flex items-center gap-3 group">
                         <img
                             src="/Logo_Dishub.png"
-                            alt="Logo Dishub KBB"
+                            alt="Logo Dishub"
                             className="w-9 h-9 object-contain"
                         />
                         <div className="flex flex-col">
@@ -49,7 +49,7 @@ export default function PublicLayout() {
                                 LIN<span className="text-blue-600">TAS.</span>
                             </span>
                             <span className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-0.5">
-                                DISHUB KBB
+                                DISHUB
                             </span>
                         </div>
                     </Link>
@@ -148,12 +148,12 @@ export default function PublicLayout() {
                             <MapPin className="text-slate-300" size={24} />
                         </div>
                         <div>
-                            <h4 className="text-white font-black text-lg tracking-tighter">LINTAS KBB</h4>
+                            <h4 className="text-white font-black text-lg tracking-tighter">LINTAS</h4>
                             <p className="text-[10px] uppercase tracking-widest font-bold mt-1">Dinas Perhubungan</p>
                         </div>
                     </div>
                     <div className="text-center md:text-right">
-                        <p className="text-xs font-medium mb-1">Jl. Gandasari No.151, Katapang, Kabupaten Bandung</p>
+                        <p className="text-xs font-medium mb-1">Jl. Kantor Dinas Perhubungan</p>
                         <p className="text-[10px] font-bold uppercase tracking-widest opacity-50">&copy; {new Date().getFullYear()} Hak Cipta Dilindungi.</p>
                     </div>
                 </div>

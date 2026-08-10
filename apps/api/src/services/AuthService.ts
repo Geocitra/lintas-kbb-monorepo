@@ -45,7 +45,7 @@ export class AuthService {
             seksi_id: user.seksi_id
         };
 
-        const secret = process.env.JWT_SECRET || 'D1shubKBB_S3cur3_T0k3n_G3nerat0r_2026!#@';
+        const secret = process.env.JWT_SECRET || 'D1shub_S3cur3_T0k3n_G3nerat0r_2026!#@';
         const expiresIn = process.env.JWT_EXPIRES_IN || '12h'; // Sesi berakhir dalam 12 jam kerja
 
         const token = jwt.sign(payload, secret, { expiresIn: expiresIn as any });

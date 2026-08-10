@@ -58,13 +58,13 @@ export default function Login() {
 
                 <div className="relative z-10">
                     <div className="flex items-center gap-3">
-                        <img src="/Logo_Dishub.png" alt="Logo Dishub KBB" className="w-12 h-12 object-contain" />
+                        <img src="/Logo_Dishub.png" alt="Logo Dishub" className="w-12 h-12 object-contain" />
                         <div>
                             <div className="text-2xl font-black text-white tracking-tight uppercase">
                                 LIN<span className="text-blue-400">TAS</span>
                             </div>
                             <div className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em]">
-                                Dishub Kab. Bandung Barat
+                                Dishub
                             </div>
                         </div>
                     </div>
@@ -107,7 +107,7 @@ export default function Login() {
                     <div className="mb-8">
                         <h2 className="text-2xl font-black text-white uppercase tracking-tight">Login Portal</h2>
                         <p className="text-slate-500 text-xs mt-1">
-                            Otentikasi NIP atau Email untuk Pegawai Dishub KBB
+                            Otentikasi NIP atau Email untuk Pegawai Dishub
                         </p>
                     </div>
 

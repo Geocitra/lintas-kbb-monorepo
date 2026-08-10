@@ -87,7 +87,7 @@ export default function BroadcastModal() {
                             <div className="mt-8 pt-6 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs font-bold text-slate-500">
                                 <div className="flex items-center gap-2">
                                     <AlertOctagon size={16} className="text-amber-500" />
-                                    Pesan dari: KEPALA DINAS PERHUBUNGAN KBB
+                                    Pesan dari: KEPALA DINAS PERHUBUNGAN
                                 </div>
                                 <div className="text-slate-400">
                                     Dikirim pada: {new Date(activeAnnouncement.createdAt).toLocaleString('id-ID')}

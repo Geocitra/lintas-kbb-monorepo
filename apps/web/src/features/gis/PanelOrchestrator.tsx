@@ -25,9 +25,9 @@ export default function PanelOrchestrator() {
                         <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 mb-4">
                             <Info size={24} />
                         </div>
-                        <h4 className="text-xs font-black uppercase tracking-widest text-slate-800">LINTAS KBB GIS</h4>
+                        <h4 className="text-xs font-black uppercase tracking-widest text-slate-800">LINTAS GIS</h4>
                         <p className="text-xs text-slate-500 font-medium leading-relaxed">
-                            Layanan Inventaris & Sistem Tata Aset KBB adalah instrumen geospasial taktis milik Dinas Perhubungan untuk memantau inventaris jalan secara real-time.
+                            Layanan Inventaris & Sistem Tata Aset adalah instrumen geospasial taktis milik Dinas Perhubungan untuk memantau inventaris jalan secara real-time.
                         </p>
                         <div className="bg-slate-50 p-4 border border-slate-100 rounded-xl text-[10px] font-black text-slate-400 uppercase tracking-widest text-center mt-6">
                             Versi 5.0 (React + PostGIS)

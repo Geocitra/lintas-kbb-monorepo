@@ -14,7 +14,7 @@ export class ExportGenerator {
         res.setHeader('Content-Disposition', 'attachment; filename="Laporan_Aset_Dishub.xlsx"');
 
         const workbook = new ExcelJS.Workbook();
-        workbook.creator = 'LINTAS KBB';
+        workbook.creator = 'LINTAS';
         workbook.created = new Date();
 
         const worksheet = workbook.addWorksheet('Data Aset');

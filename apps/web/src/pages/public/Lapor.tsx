@@ -99,7 +99,7 @@ export default function Lapor() {
                         Lapor <span className="text-blue-400">Kerusakan</span> Aset
                     </h1>
                     <p className="text-slate-400 text-sm leading-relaxed max-w-xl">
-                        Bantu kami menjaga infrastruktur Bandung Barat. Laporan Anda akan ditindaklanjuti dalam <strong className="text-white">1×24 jam</strong>.
+                        Bantu kami menjaga infrastruktur jalan. Laporan Anda akan ditindaklanjuti dalam <strong className="text-white">1×24 jam</strong>.
                     </p>
 
                     {/* Step indicators */}
@@ -283,7 +283,7 @@ export default function Lapor() {
                             )}
                         </button>
                         <p className="text-center text-[10px] text-slate-400 mt-4 font-medium">
-                            Dengan melapor, Anda membantu menjaga kualitas infrastruktur Kabupaten Bandung Barat.
+                            Dengan melapor, Anda membantu menjaga kualitas infrastruktur infrastruktur.
                         </p>
                     </form>
                 </div>

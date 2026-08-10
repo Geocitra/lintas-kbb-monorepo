@@ -56,7 +56,7 @@ app.use('/uploads', express.static(uploadsPath));
 app.get('/health', (req: Request, res: Response) => {
     res.status(200).json({
         success: true,
-        message: 'LINTAS KBB API Server is running smoothly!',
+        message: 'LINTAS API Server is running smoothly!',
         timestamp: new Date().toISOString()
     });
 });

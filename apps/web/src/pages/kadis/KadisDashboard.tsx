@@ -85,7 +85,7 @@ export default function KadisDashboard() {
                             Ruang Komando
                         </h1>
                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
-                            Executive Dashboard — Dinas Perhubungan KBB
+                            Executive Dashboard — Dinas Perhubungan
                         </p>
                     </div>
                 </div>

@@ -25,7 +25,7 @@ export default function Pengumuman() {
                         </h1>
                     </div>
                     <p className="text-slate-500 text-xs font-medium mt-1">
-                        Informasi resmi dari pimpinan dan manajemen Dinas Perhubungan KBB.
+                        Informasi resmi dari pimpinan dan manajemen Dinas Perhubungan.
                     </p>
                 </div>
                 {canCreate && (

@@ -73,7 +73,7 @@ function MapFlyTo({ center }: { center: L.LatLng }) {
 }
 
 export default function MapPicker({ onLocationSelect, onAssetSelect }: MapPickerProps) {
-    // Default Center: Kantor Pemda / KBB (-6.8431, 107.4912)
+    // Default Center: Kantor Pemda (-6.8431, 107.4912)
     const [position, setPosition] = useState<L.LatLng>(new L.LatLng(-6.8431, 107.4912));
     const [isLocked, setIsLocked] = useState(false);
     const [isLocating, setIsLocating] = useState(false);

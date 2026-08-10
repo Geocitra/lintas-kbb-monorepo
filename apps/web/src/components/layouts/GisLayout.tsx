@@ -35,7 +35,7 @@ export default function GisLayout() {
                     </div>
                     <div className="flex flex-col leading-none">
                         <span className="text-sm font-black tracking-tighter uppercase">
-                            LINTAS <span className="text-blue-500">KBB</span>
+                            LINTAS
                         </span>
                         <span className="text-[8px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-0.5">
                             Command Center GIS
@@ -101,7 +101,7 @@ export default function GisLayout() {
 
                     <div className="mt-auto flex flex-col gap-2 w-full px-2">
                         <button
-                            onClick={() => handleNavClick('tentang', 'Tentang LINTAS KBB')}
+                            onClick={() => handleNavClick('tentang', 'Tentang LINTAS')}
                             className={`w-full aspect-square flex items-center justify-center rounded-xl transition-colors
                 ${isPanelActive('tentang') ? 'bg-blue-50 text-blue-600 border border-blue-200' : 'text-slate-400 hover:text-blue-600 hover:bg-slate-50'}`}
                             title="Informasi Sistem"

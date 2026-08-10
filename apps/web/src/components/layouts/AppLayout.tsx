@@ -80,7 +80,7 @@ export default function AppLayout() {
                             LIN<span className="text-blue-400">TAS</span>
                         </span>
                         <span className="text-[9px] font-bold text-slate-500 uppercase tracking-[0.2em] mt-0.5">
-                            Dishub KBB
+                            Dishub
                         </span>
                     </div>
                     <button className="md:hidden ml-auto text-slate-400 hover:text-white" onClick={() => setIsSidebarOpen(false)}>
@@ -157,7 +157,7 @@ export default function AppLayout() {
                         <div className="hidden sm:flex items-center gap-2">
                             <img src="/Logo_Dishub.png" alt="Logo" className="w-6 h-6 object-contain" />
                             <span className="text-xs font-black text-slate-400 uppercase tracking-[0.15em]">
-                                Dinas Perhubungan Kab. Bandung Barat
+                                Dinas Perhubungan
                             </span>
                         </div>
                     </div>

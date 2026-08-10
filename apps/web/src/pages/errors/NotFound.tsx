@@ -18,7 +18,7 @@ export default function NotFound() {
             </h2>
 
             <p className="text-slate-500 font-medium max-w-md mb-10 leading-relaxed text-sm">
-                Jalur yang Anda tuju tidak tersedia di dalam radar sistem LINTAS KBB. Pastikan URL sudah benar atau hubungi Administrator.
+                Jalur yang Anda tuju tidak tersedia di dalam radar sistem LINTAS. Pastikan URL sudah benar atau hubungi Administrator.
             </p>
 
             <Link

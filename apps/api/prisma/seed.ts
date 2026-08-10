@@ -44,7 +44,7 @@ async function main() {
     const seksiPju = await prisma.seksi.create({
         data: {
             nama_seksi: 'Seksi Penerangan Jalan Umum (PJU)',
-            deskripsi: 'Bertanggung jawab atas pemeliharaan dan pengadaan penerangan jalan di seluruh KBB.',
+            deskripsi: 'Bertanggung jawab atas pemeliharaan dan pengadaan penerangan jalan di seluruh wilayah operasional.',
         }
     });
 
@@ -136,7 +136,7 @@ async function main() {
 
     const warga2 = await prisma.user.create({
         data: {
-            name: 'Warga Peduli KBB',
+            name: 'Warga Peduli',
             email: 'peduli.kbb@gmail.com',
             role: Role.MASYARAKAT,
             no_wa: '6289999888776',
@@ -173,7 +173,7 @@ async function main() {
         {
             id: 'asset-pju-001',
             kategori_id: catPju.id,
-            kode_inventaris: 'PJU-KBB-PDL-001',
+            kode_inventaris: 'PJU-DIS-PDL-001',
             nama_aset: 'Tiang PJU LED 120W Padalarang',
             kondisi: AssetCondition.BAIK,
             status_operasional: AssetState.AKTIF,
@@ -186,7 +186,7 @@ async function main() {
         {
             id: 'asset-pju-002',
             kategori_id: catPju.id,
-            kode_inventaris: 'PJU-KBB-CKW-002',
+            kode_inventaris: 'PJU-DIS-CKW-002',
             nama_aset: 'Tiang PJU Merkuri Cikalongwetan',
             kondisi: AssetCondition.KRITIS,
             status_operasional: AssetState.AKTIF,
@@ -199,7 +199,7 @@ async function main() {
         {
             id: 'asset-rambu-003',
             kategori_id: catRambu.id,
-            kode_inventaris: 'RMB-KBB-LMB-003',
+            kode_inventaris: 'RMB-DIS-LMB-003',
             nama_aset: 'Rambu Dilarang Parkir Lembang',
             kondisi: AssetCondition.RUSAK_RINGAN,
             status_operasional: AssetState.AKTIF,
@@ -212,7 +212,7 @@ async function main() {
         {
             id: 'asset-apill-004',
             kategori_id: catApill.id,
-            kode_inventaris: 'APL-KBB-LMB-004',
+            kode_inventaris: 'APL-DIS-LMB-004',
             nama_aset: 'Traffic Light Simpang Lembang',
             kondisi: AssetCondition.RUSAK_BERAT,
             status_operasional: AssetState.DALAM_PERBAIKAN,
@@ -225,7 +225,7 @@ async function main() {
         {
             id: 'asset-rambu-005',
             kategori_id: catRambu.id,
-            kode_inventaris: 'RMB-KBB-CSR-005',
+            kode_inventaris: 'RMB-DIS-CSR-005',
             nama_aset: 'Cermin Tikungan Cisarua 02',
             kondisi: AssetCondition.HILANG,
             status_operasional: AssetState.AKTIF,
@@ -238,7 +238,7 @@ async function main() {
         {
             id: 'asset-knd-006',
             kategori_id: catKendaraan.id,
-            kode_inventaris: 'KND-KBB-PJU-001',
+            kode_inventaris: 'KND-DIS-PJU-001',
             nama_aset: 'Mobil Derek Tangga PJU Mitsubishi Colt',
             kondisi: AssetCondition.BAIK,
             status_operasional: AssetState.AKTIF,
@@ -496,7 +496,7 @@ async function main() {
     const ann1 = await prisma.announcement.create({
         data: {
             title: 'Apel Siaga & Pengamanan Jalur Wisata Idul Fitri',
-            content: 'Diberitahukan kepada seluruh jajaran pegawai Dishub KBB, diharapkan bersiap melaksanakan apel siaga dan penugasan posko pengamanan lalu lintas menjelang mudik Lebaran. Koordinasi teknis akan dilaksanakan besok pagi.',
+            content: 'Diberitahukan kepada seluruh jajaran pegawai Dishub, diharapkan bersiap melaksanakan apel siaga dan penugasan posko pengamanan lalu lintas menjelang mudik Lebaran. Koordinasi teknis akan dilaksanakan besok pagi.',
             target: AnnouncementTarget.SEMUA,
             is_important: true,
             author_id: kadis.id,

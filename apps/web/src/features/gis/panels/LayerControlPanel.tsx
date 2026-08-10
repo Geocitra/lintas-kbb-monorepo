@@ -18,11 +18,11 @@ export default function LayerControlPanel() {
     ];
 
     const featureLayers = [
-        { id: 'assets', label: 'Aset Dishub KBB', desc: 'PJU, Rambu, & Fasilitas' },
+        { id: 'assets', label: 'Aset Dishub', desc: 'PJU, Rambu, & Fasilitas' },
         ...((user?.role && ['KADIS', 'KASI'].includes(user.role)) ? [
             { id: 'reports', label: 'Radar Pengaduan', desc: 'Laporan warga & petugas' }
         ] : []),
-        { id: 'boundaries', label: 'Batas Administrasi', desc: 'Batas wilayah Desa KBB' }
+        { id: 'boundaries', label: 'Batas Administrasi', desc: 'Batas wilayah Desa' }
     ];
 
     return (

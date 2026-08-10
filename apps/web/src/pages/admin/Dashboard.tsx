@@ -115,7 +115,7 @@ export default function Dashboard() {
                 <div>
                     <h1 className="text-2xl font-black text-slate-800 tracking-tight uppercase">Dashboard Eksekutif</h1>
                     <p className="text-slate-500 text-xs font-medium mt-1">
-                        Ringkasan data analitik operasional LINTAS Kabupaten Bandung Barat.
+                        Ringkasan data analitik operasional LINTAS.
                     </p>
                 </div>
                 <div className="flex gap-3">

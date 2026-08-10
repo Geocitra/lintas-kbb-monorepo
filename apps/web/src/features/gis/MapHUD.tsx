@@ -53,7 +53,7 @@ export function ZoomControls() {
             <button
                 onClick={triggerResetView}
                 className="w-12 h-12 flex items-center justify-center text-slate-500 hover:bg-blue-50 hover:text-blue-600 transition-colors active:bg-blue-100 group outline-none"
-                title="Reset ke KBB"
+                title="Reset View"
             >
                 <Maximize2 size={16} strokeWidth={2.5} className="group-hover:scale-110 transition-transform duration-200" />
             </button>

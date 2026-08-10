@@ -58,7 +58,7 @@ export class TicketService {
                 await waQueue.add('send-wa-assignment', {
                     phone: technician.no_wa,
                     ticketNumber: report.ticket_number,
-                    message: `*LINTAS KBB TUGAS BARU*\n\nHalo ${technician.name}, Anda mendapat tugas perbaikan untuk tiket *${report.ticket_number}*. Prioritas: ${data.prioritas}.\nSLA Deadline: ${new Date(data.deadline_at).toLocaleString('id-ID')}.\n\nSegera cek aplikasi!`,
+                    message: `*LINTAS TUGAS BARU*\n\nHalo ${technician.name}, Anda mendapat tugas perbaikan untuk tiket *${report.ticket_number}*. Prioritas: ${data.prioritas}.\nSLA Deadline: ${new Date(data.deadline_at).toLocaleString('id-ID')}.\n\nSegera cek aplikasi!`,
                 });
             }
 
@@ -182,7 +182,7 @@ export class TicketService {
                         await waQueue.add('send-wa-resolved', {
                             phone: rep.kontak_pelapor,
                             ticketNumber: rep.ticket_number,
-                            message: `*UPDATE LINTAS KBB*\n\nYth. Pelapor,\nLaporan Anda dengan Tiket *${rep.ticket_number}* telah SELESAI diperbaiki oleh teknisi kami. Terima kasih atas partisipasi Anda dalam menjaga fasilitas KBB.`
+                            message: `*UPDATE LINTAS*\n\nYth. Pelapor,\nLaporan Anda dengan Tiket *${rep.ticket_number}* telah SELESAI diperbaiki oleh teknisi kami. Terima kasih atas partisipasi Anda dalam menjaga fasilitas.`
                         });
                     }
                 }

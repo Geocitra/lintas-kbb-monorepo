@@ -148,7 +148,7 @@ export default function Track() {
                                             {new Date(reportData.createdAt).toLocaleString('id-ID')}
                                         </p>
                                         <p className="text-xs text-slate-600 font-medium bg-slate-50 p-4 rounded-xl border border-slate-100">
-                                            Laporan Anda masuk ke sistem LINTAS KBB dan sedang mengantre untuk validasi Admin.
+                                            Laporan Anda masuk ke sistem LINTAS dan sedang mengantre untuk validasi Admin.
                                         </p>
                                     </div>
 
@@ -187,7 +187,7 @@ export default function Track() {
                                                     </p>
                                                 )}
                                                 <p className="text-xs text-emerald-800 font-medium bg-emerald-50 p-4 rounded-xl border border-emerald-100 mt-2">
-                                                    Perbaikan telah rampung dan diverifikasi oleh Admin. Terima kasih atas kepedulian Anda terhadap fasilitas KBB!
+                                                    Perbaikan telah rampung dan diverifikasi oleh Admin. Terima kasih atas kepedulian Anda terhadap fasilitas jalan!
                                                 </p>
                                                 {/* Menampilkan foto hasil jika ada */}
                                                 {reportData.progress?.foto_hasil && (

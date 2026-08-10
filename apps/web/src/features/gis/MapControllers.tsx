@@ -1,9 +1,8 @@
-// apps/web/src/features/gis/MapControllers.tsx
 import { useEffect } from 'react';
 import { useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import { useGisUIStore } from '@/store/useGisUIStore';
-import bogorKecamatan from '@/assets/geojson/bogor-kecamatan.json';
+import administrasiLn from '@/assets/geojson/ADMINISTRASI_LN_25K.json';
 
 // Mengaktifkan akses map secara global (Opsional, sangat berguna untuk debugging / export image)
 export const mapRegistry = {
@@ -22,7 +21,7 @@ export default function MapControllers() {
     // Fit view to the bounds of the administrative GeoJSON on mount
     useEffect(() => {
         try {
-            const geoJsonLayer = L.geoJSON(bogorKecamatan as any);
+            const geoJsonLayer = L.geoJSON(administrasiLn as any);
             map.fitBounds(geoJsonLayer.getBounds(), { padding: [20, 20] });
         } catch (e) {
             console.error('Gagal memposisikan peta ke batas wilayah:', e);

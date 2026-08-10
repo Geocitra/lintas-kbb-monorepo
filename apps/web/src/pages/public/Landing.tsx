@@ -29,7 +29,7 @@ export default function Landing() {
                         <div className="flex items-center gap-2 mb-8">
                             <img src="/Logo_Dishub.png" alt="Logo" className="w-8 h-8 object-contain" />
                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">
-                                Dishub Kabupaten Bandung Barat
+                                Dinas Perhubungan
                             </span>
                         </div>
 
@@ -45,7 +45,7 @@ export default function Landing() {
                         </div>
 
                         <p className="text-base text-slate-300 leading-relaxed font-medium mb-10 max-w-xl">
-                            Sistem pelaporan dan pendataan aset infrastruktur jalan yang cerdas dan terintegrasi untuk Kabupaten Bandung Barat.
+                            Sistem pelaporan dan pendataan aset infrastruktur jalan yang cerdas dan terintegrasi untuk infrastruktur.
                         </p>
 
                         <div className="flex flex-wrap gap-4">

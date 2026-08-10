@@ -108,7 +108,7 @@ export default function AssetList() {
                 <div>
                     <h1 className="text-2xl font-black text-slate-800 tracking-tight uppercase">Inventaris Aset</h1>
                     <p className="text-slate-500 text-xs font-medium mt-1">
-                        Manajemen master data infrastruktur jalan Dishub KBB.
+                        Manajemen master data infrastruktur jalan Dishub.
                     </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
