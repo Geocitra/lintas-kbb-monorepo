@@ -10,6 +10,27 @@ import { CreateAssetSchema, type CreateAssetDTO } from '@dishub/types';
 import { useCreateAsset, useUpdateAsset, useAssetById } from '@/hooks/useAssetQueries';
 import { api } from '@/lib/api';
 
+// Helper Utility untuk Foto Path
+const getImageUrl = (path?: string) => {
+    if (!path) return 'https://placehold.co/600x400/f8fafc/94a3b8?text=NO+IMAGE';
+    if (path.startsWith('http')) return path;
+    
+    const origin = import.meta.env.PROD ? window.location.origin : 'http://localhost:3000';
+    
+    // Jika path sudah memiliki /uploads/
+    if (path.includes('uploads/')) {
+        const cleanPath = path.startsWith('/') ? path : `/${path}`;
+        return `${origin}${cleanPath}`;
+    }
+    
+    // Jika path tidak memiliki folder uploads (data seeder lama tanpa folder prefix)
+    if (path.startsWith('bukti_') || path.startsWith('serah_')) {
+        return `${origin}/uploads/reports/${path}`;
+    }
+    
+    return `${origin}/uploads/assets/${path}`;
+};
+
 export default function AssetForm() {
     const { id } = useParams<{ id: string }>(); // Jika ada ID, berarti mode EDIT
     const isEditMode = !!id;
@@ -59,11 +80,7 @@ export default function AssetForm() {
             }
             // Jika ada foto lama, tampilkan di preview
             if (assetData.foto_utama) {
-                setPreviewUrl(
-                    assetData.foto_utama.startsWith('http')
-                        ? assetData.foto_utama
-                        : `${import.meta.env.PROD ? window.location.origin : 'http://localhost:3000'}${assetData.foto_utama}`
-                );
+                setPreviewUrl(getImageUrl(assetData.foto_utama));
             }
         }
     }, [isEditMode, assetData, reset]);

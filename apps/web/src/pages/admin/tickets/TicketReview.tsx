@@ -12,8 +12,21 @@ import { useReviewTicket } from '@/hooks/useTicketQueries';
 const getImageUrl = (path?: string) => {
     if (!path) return 'https://placehold.co/600x400/f8fafc/94a3b8?text=TIDAK+ADA+FOTO';
     if (path.startsWith('http')) return path;
+    
     const origin = import.meta.env.PROD ? window.location.origin : 'http://localhost:3000';
-    return `${origin}${path}`;
+    
+    // Jika path sudah memiliki /uploads/
+    if (path.includes('uploads/')) {
+        const cleanPath = path.startsWith('/') ? path : `/${path}`;
+        return `${origin}${cleanPath}`;
+    }
+    
+    // Jika path tidak memiliki folder uploads (data seeder lama tanpa folder prefix)
+    if (path.startsWith('bukti_') || path.startsWith('serah_')) {
+        return `${origin}/uploads/reports/${path}`;
+    }
+    
+    return `${origin}/uploads/assets/${path}`;
 };
 
 export default function TicketReview() {
